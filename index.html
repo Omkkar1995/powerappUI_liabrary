@@ -1,0 +1,3029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Power Apps UI Kit @Awaji</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================
+   CanvasKit — Power Apps Prebuilt Controls
+   ============================================ */
+
+:root {
+  /* Active theme (set by JS) */
+  --theme-primary: #4F46E5;
+  --theme-accent:  #8B5CF6;
+  --theme-bg:      #F5F3FF;
+
+  /* Surface palette */
+  --bg:            #F8F8FC;
+  --surface-1:     rgba(0,0,0,0.03);
+  --surface-2:     rgba(0,0,0,0.05);
+  --surface-3:     rgba(0,0,0,0.08);
+  --border:        rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+
+  /* Text */
+  --text-1: #111118;
+  --text-2: #4A4A5C;
+  --text-3: #7E7E8F;
+  --text-4: #ADADBC;
+
+  /* Type */
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Layout */
+  --sidebar-w: 320px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Ambient background */
+.ambient {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+}
+.ambient__grid {
+  position: absolute; inset: -2px;
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,0,0,0.9), transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,0,0,0.9), transparent 80%);
+}
+.ambient__blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.12;
+  transition: background 1.2s ease;
+}
+.ambient__blob--1 {
+  width: 620px; height: 620px; top: -180px; left: -180px;
+  background: radial-gradient(circle, #4F46E5, transparent 70%);
+}
+.ambient__blob--2 {
+  width: 500px; height: 500px; top: 40%; right: -120px;
+  background: radial-gradient(circle, #8B5CF6, transparent 70%);
+  opacity: 0.08;
+}
+.ambient__blob--3 {
+  width: 420px; height: 420px; bottom: -160px; left: 40%;
+  background: radial-gradient(circle, #4F46E5, transparent 70%);
+  opacity: 0.07;
+}
+.ambient__noise {
+  position: absolute; inset: 0; opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* Top bar */
+.topbar {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 36px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  background: rgba(248,248,252,0.85);
+}
+.logo { display: flex; align-items: center; gap: 12px; color: #4F46E5; }
+.logo svg { width: 30px; height: 30px; }
+.logo__text { display: flex; flex-direction: column; line-height: 1.15; }
+.logo__brand {
+  font-family: var(--font-display);
+  font-size: 22px; color: var(--text-1); letter-spacing: -0.01em;
+}
+.logo__brand em { font-style: italic; color: #8B5CF6; }
+.logo__sub {
+  font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3); font-weight: 500;
+}
+.topbar__nav {
+  display: flex; gap: 4px; padding: 4px;
+  background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: 99px;
+}
+.topbar__link {
+  padding: 7px 16px; font-size: 13px; color: var(--text-2);
+  text-decoration: none; border-radius: 99px;
+  transition: all 0.2s ease; font-weight: 500;
+}
+.topbar__link:hover { color: var(--text-1); }
+.topbar__link--active { background: var(--surface-3); color: var(--text-1); }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border: 1px solid var(--border);
+  border-radius: 99px; font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-2); background: var(--surface-1);
+}
+.pill__dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #22C55E; box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(34,197,94,0.0); }
+}
+
+/* Layout — now single column */
+.layout {
+  position: relative; z-index: 5;
+  min-height: calc(100vh - 71px);
+  display: flex;
+  justify-content: center;
+}
+
+/* Content */
+.content {
+  padding: 48px 40px 64px;
+  max-width: 1080px;
+  width: 100%;
+}
+.content__header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 48px; margin-bottom: 48px;
+  padding-bottom: 32px; border-bottom: 1px solid var(--border);
+}
+.eyebrow {
+  display: inline-block; font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: #8B5CF6; font-weight: 600;
+  margin-bottom: 14px; font-family: var(--font-mono);
+}
+.content__heading h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.5vw, 56px);
+  line-height: 1.02; margin: 0 0 18px;
+  color: var(--text-1); letter-spacing: -0.02em; font-weight: 400;
+}
+.content__heading h1 em {
+  font-style: italic; color: #8B5CF6; position: relative;
+}
+.content__heading p {
+  max-width: 520px; margin: 0; font-size: 15px;
+  line-height: 1.6; color: var(--text-2);
+}
+.content__stats { display: flex; gap: 28px; flex-shrink: 0; }
+.stat {
+  display: flex; flex-direction: column; gap: 3px;
+  padding-left: 16px; border-left: 1px solid var(--border-strong);
+}
+.stat__num {
+  font-family: var(--font-display); font-size: 28px;
+  color: var(--text-1); letter-spacing: -0.01em; line-height: 1;
+}
+.stat__lbl {
+  font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--text-3); font-weight: 500;
+}
+
+/* Controls grid */
+.controls { display: flex; flex-direction: column; gap: 14px; }
+.empty-state {
+  padding: 64px 32px; text-align: center;
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.empty-state__frame {
+  width: 72px; height: 72px; border-radius: 16px;
+  background: var(--surface-2); color: var(--theme-accent);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 6px;
+}
+.empty-state__frame svg { width: 40px; height: 40px; }
+.empty-state h3 {
+  margin: 0; font-family: var(--font-display);
+  font-size: 24px; color: var(--text-1);
+  font-weight: 400; letter-spacing: -0.01em;
+}
+.empty-state p {
+  margin: 0; max-width: 420px; font-size: 14px;
+  line-height: 1.6; color: var(--text-3);
+}
+
+/* Control card */
+.control-card {
+  background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+  transition: border-color 0.25s ease;
+}
+.control-card:hover { border-color: var(--border-strong); }
+.control-card__head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.control-card__title { display: flex; align-items: center; gap: 10px; }
+.control-card__name {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-1); letter-spacing: -0.005em;
+}
+.control-card__type {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--text-3);
+  padding-left: 10px;
+  border-left: 1px solid var(--border-strong);
+}
+.control-card__actions { display: flex; align-items: center; gap: 10px; }
+.control-card__tag {
+  padding: 3px 8px; font-size: 10px; font-family: var(--font-mono);
+  background: color-mix(in srgb, var(--card-primary, var(--theme-primary)) 15%, transparent);
+  color: var(--card-accent, var(--theme-accent));
+  border: 1px solid color-mix(in srgb, var(--card-primary, var(--theme-primary)) 30%, transparent);
+  border-radius: 5px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* Per-card theme dot picker */
+.theme-dots {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 3px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+}
+.theme-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+  padding: 0;
+  display: block;
+}
+.theme-dot:hover { transform: scale(1.1); }
+.theme-dot.active {
+  border-color: var(--text-1);
+  transform: scale(1.08);
+}
+.theme-dot__name {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-1);
+  background: #FFFFFF;
+  border: 1px solid var(--border-strong);
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 20;
+}
+.theme-dot:hover .theme-dot__name { opacity: 1; }
+
+.control-card__preview {
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 24px;
+  min-height: 120px;
+  background: linear-gradient(135deg, var(--card-bg, var(--theme-bg)) 0%, color-mix(in srgb, var(--card-bg, var(--theme-bg)) 70%, white) 100%);
+  position: relative; overflow: hidden;
+}
+.control-card__preview::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.07) 1px, transparent 0);
+  background-size: 18px 18px; opacity: 0.5;
+}
+.control-card__preview > * { position: relative; z-index: 1; }
+
+/* Collapsible YAML section */
+.control-card__yaml {
+  background: #F3F3F8;
+  border-top: 1px solid var(--border);
+}
+.control-card__yaml-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px 8px 14px;
+  background: var(--surface-1);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+.control-card__yaml-head:hover { background: var(--surface-2); }
+.control-card__yaml-label {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.control-card__yaml-label::before {
+  content: ''; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--card-accent, var(--theme-accent));
+}
+.control-card__yaml-chevron {
+  width: 14px; height: 14px;
+  color: var(--text-3);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.control-card.expanded .control-card__yaml-chevron { transform: rotate(180deg); }
+
+.control-card__yaml-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  position: relative;
+}
+.control-card.expanded .control-card__yaml-body {
+  max-height: 600px;
+}
+.control-card__yaml-body-inner {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+.control-card__yaml-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+}
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; background: var(--card-primary, var(--theme-primary));
+  color: white; border: none; border-radius: 5px;
+  font-family: var(--font-sans); font-size: 11.5px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s ease;
+}
+.copy-btn:hover { background: var(--card-accent, var(--theme-accent)); transform: translateY(-1px); }
+.copy-btn:active { transform: translateY(0); }
+.copy-btn svg { width: 12px; height: 12px; }
+.control-card__yaml-code {
+  margin: 0; padding: 14px 16px;
+  font-family: var(--font-mono); font-size: 11.5px;
+  line-height: 1.6; color: var(--text-2);
+  overflow-x: auto; white-space: pre; tab-size: 2;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.control-card__yaml-code .tok-key   { color: #6D28D9; }
+.control-card__yaml-code .tok-str   { color: #15803D; }
+.control-card__yaml-code .tok-num   { color: #B45309; }
+.control-card__yaml-code .tok-hex   { color: #BE123C; }
+.control-card__yaml-code .tok-punc  { color: var(--text-4); }
+.control-card__yaml-code .tok-prop  { color: #1D4ED8; }
+
+/* Footer */
+.footer {
+  margin-top: 64px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-3);
+  display: flex; gap: 10px; align-items: center;
+}
+.footer__dot { color: var(--text-4); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; background: #111118;
+  color: #F8F8FC; border-radius: 99px;
+  font-size: 13px; font-weight: 500;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100;
+  box-shadow: 0 12px 40px -10px rgba(0,0,0,0.5);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast svg { width: 16px; height: 16px; color: #10B981; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.content__heading, .content__stats, .controls > * {
+  animation: fadeUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+.content__heading { animation-delay: 0.1s; }
+.content__stats   { animation-delay: 0.2s; }
+.controls > *     { animation-delay: 0.3s; }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .content { padding: 32px 20px; }
+  .content__header { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .topbar { padding: 16px 20px; }
+  .topbar__nav { display: none; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-4); }
+</style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="ambient">
+  <div class="ambient__grid"></div>
+  <div class="ambient__blob ambient__blob--1"></div>
+  <div class="ambient__blob ambient__blob--2"></div>
+  <div class="ambient__blob ambient__blob--3"></div>
+  <div class="ambient__noise"></div>
+</div>
+
+<!-- Top nav -->
+<header class="topbar">
+  <div class="topbar__left">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="2" y="2" width="13" height="13" rx="2.5" fill="currentColor" opacity="0.95"/>
+        <rect x="17" y="2" width="13" height="13" rx="2.5" fill="currentColor" opacity="0.55"/>
+        <rect x="2" y="17" width="13" height="13" rx="2.5" fill="currentColor" opacity="0.55"/>
+        <rect x="17" y="17" width="13" height="13" rx="2.5" fill="currentColor" opacity="0.95"/>
+      </svg>
+      <div class="logo__text">
+        <span class="logo__brand">Power Apps UI <em>Kit</em></span>
+        <span class="logo__sub">@Awaji · Prebuilt Controls</span>
+      </div>
+    </div>
+  </div>
+  <nav class="topbar__nav">
+    <a href="#" class="topbar__link topbar__link--active">Controls</a>
+  </nav>
+  <div class="topbar__right">
+    <span class="pill">
+      <span class="pill__dot"></span>
+      v0.1 · preview
+    </span>
+  </div>
+</header>
+
+<!-- Main layout -->
+<main class="layout">
+
+  <!-- Controls showcase -->
+  <section class="content">
+
+    <div class="content__header">
+      <div class="content__heading">
+        <span class="eyebrow">コンポーネントライブラリ</span>
+        <h1>すぐ使えるコントロール、<em>テーマ</em>付き。</h1>
+        <p>Power Apps 用プリビルドコントロール集。各カードに独自のカラーパレット付き — テーマを選んで YAML をコピーし、キャンバスアプリにそのまま貼り付けるだけ。</p>
+      </div>
+
+      <div class="content__stats">
+        <div class="stat">
+          <span class="stat__num" id="controlCount">0</span>
+          <span class="stat__lbl">Controls</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num">6</span>
+          <span class="stat__lbl">Themes</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num">1-click</span>
+          <span class="stat__lbl">Copy YAML</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls grid -->
+    <div class="controls" id="controlsGrid">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state__frame">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <rect x="8" y="14" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <rect x="14" y="22" width="14" height="3" rx="1.5" fill="currentColor" opacity="0.4"/>
+            <rect x="14" y="29" width="22" height="3" rx="1.5" fill="currentColor" opacity="0.25"/>
+            <rect x="14" y="36" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.25"/>
+            <circle cx="46" cy="34" r="6" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3>Ready for your first control</h3>
+        <p>Share the YAML and a screenshot of a Power Apps control, and it'll appear here with theme support and one-click copy.</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span>Built for Power Apps makers · @Awaji</span>
+      <span class="footer__dot">•</span>
+      <span>YAML compatible with Power Fx</span>
+    </footer>
+
+  </section>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg viewBox="0 0 20 20" fill="none"><path d="M5 10.5L8.5 14L15.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastMsg">YAML copied to clipboard</span>
+</div>
+
+<script>
+/* ============================================
+   CanvasKit — App logic
+   ============================================ */
+
+/* 1. Theme definitions */
+const THEMES = {
+  indigo:  { name: 'Indigo',  primary: '#4F46E5', accent: '#8B5CF6', bg: '#F5F3FF' },
+  emerald: { name: 'Emerald', primary: '#059669', accent: '#10B981', bg: '#ECFDF5' },
+  rose:    { name: 'Rose',    primary: '#E11D48', accent: '#F43F5E', bg: '#FFF1F2' },
+  amber:   { name: 'Amber',   primary: '#D97706', accent: '#F59E0B', bg: '#FFFBEB' },
+  slate:   { name: 'Slate',   primary: '#1E293B', accent: '#475569', bg: '#F1F5F9' },
+  ocean:   { name: 'Ocean',   primary: '#0284C7', accent: '#0EA5E9', bg: '#F0F9FF' },
+};
+const THEME_KEYS = Object.keys(THEMES);
+const DEFAULT_THEME = 'indigo';
+
+/* 2. Control registry — each control has its own active theme */
+const controls = [];   // [{ id, def, theme }]
+
+function registerControl(def) {
+  controls.push({
+    id: 'c' + (controls.length + 1),
+    def,
+    theme: DEFAULT_THEME,
+  });
+  renderControls();
+}
+
+/* 3. YAML syntax highlighter */
+function highlightYaml(yaml) {
+  let s = yaml
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  s = s.replace(/(#[0-9A-Fa-f]{3,8})\b/g, '<span class="tok-hex">$1</span>');
+  s = s.replace(/("[^"]*")/g, '<span class="tok-str">$1</span>');
+  s = s.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tok-num">$1</span>');
+  s = s.replace(/^(\s*)([A-Za-z_][\w]*)(\s*:)/gm,
+    '$1<span class="tok-key">$2</span><span class="tok-punc">$3</span>');
+  s = s.replace(/\b(RGBA|ColorValue|Self|Parent|App)\b/g,
+    '<span class="tok-prop">$1</span>');
+
+  return s;
+}
+
+/* Build the theme-dot picker for a card */
+function buildThemeDots(activeKey) {
+  return THEME_KEYS.map(key => {
+    const t = THEMES[key];
+    return `<button class="theme-dot ${key === activeKey ? 'active' : ''}"
+              data-theme="${key}"
+              style="background: linear-gradient(135deg, ${t.primary} 50%, ${t.accent} 50%);"
+              aria-label="Apply ${t.name} theme">
+              <span class="theme-dot__name">${t.name}</span>
+            </button>`;
+  }).join('');
+}
+
+/* 4. Render all controls */
+function renderControls() {
+  const grid = document.getElementById('controlsGrid');
+  const empty = document.getElementById('emptyState');
+  const countEl = document.getElementById('controlCount');
+
+  countEl.textContent = controls.length;
+
+  if (controls.length === 0) {
+    grid.innerHTML = '';
+    grid.appendChild(empty);
+    return;
+  }
+
+  grid.innerHTML = '';
+
+  controls.forEach((entry, idx) => {
+    const { def, theme: themeKey } = entry;
+    const theme = THEMES[themeKey];
+
+    const card = document.createElement('article');
+    card.className = 'control-card';
+    card.dataset.id = entry.id;
+    card.style.animationDelay = `${0.05 + idx * 0.05}s`;
+    // Per-card CSS vars so tag / copy btn / yaml dot color match this card's theme
+    card.style.setProperty('--card-primary', theme.primary);
+    card.style.setProperty('--card-accent',  theme.accent);
+    card.style.setProperty('--card-bg',      theme.bg);
+
+    const yaml = def.buildYaml(theme);
+    const preview = def.renderPreview(theme);
+
+    card.innerHTML = `
+      <div class="control-card__head">
+        <div class="control-card__title">
+          <span class="control-card__name">${def.name}</span>
+          <span class="control-card__type">${def.type}</span>
+        </div>
+        <div class="control-card__actions">
+          <div class="theme-dots" data-theme-picker>
+            ${buildThemeDots(themeKey)}
+          </div>
+          <span class="control-card__tag">${def.tag}</span>
+        </div>
+      </div>
+      <div class="control-card__preview" data-preview></div>
+      <div class="control-card__yaml">
+        <div class="control-card__yaml-head" data-toggle>
+          <span class="control-card__yaml-label">View YAML · Power Fx</span>
+          <svg class="control-card__yaml-chevron" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6 L8 10 L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="control-card__yaml-body">
+          <div class="control-card__yaml-body-inner">
+            <div class="control-card__yaml-actions">
+              <button class="copy-btn" data-copy>
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="4" y="4" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M10 4V3a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Copy YAML
+              </button>
+            </div>
+            <pre class="control-card__yaml-code"><code>${highlightYaml(yaml)}</code></pre>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const previewSlot = card.querySelector('[data-preview]');
+    if (preview instanceof Node) {
+      previewSlot.appendChild(preview);
+    } else {
+      previewSlot.innerHTML = preview;
+    }
+
+    // Toggle YAML expand/collapse
+    card.querySelector('[data-toggle]').addEventListener('click', () => {
+      card.classList.toggle('expanded');
+    });
+
+    // Per-card theme switcher
+    card.querySelector('[data-theme-picker]').addEventListener('click', (e) => {
+      const dot = e.target.closest('.theme-dot');
+      if (!dot) return;
+      const newTheme = dot.dataset.theme;
+      if (newTheme === entry.theme) return;
+      entry.theme = newTheme;
+      renderControls();
+    });
+
+    // Copy handler
+    const copyBtn = card.querySelector('[data-copy]');
+    copyBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      copyYaml(yaml);
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+/* 5. Copy YAML */
+async function copyYaml(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('YAML copied to clipboard');
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('YAML copied to clipboard');
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* 6. Expose for future control definitions */
+window.CanvasKit = {
+  registerControl,
+  THEMES,
+};
+
+/* ============================================
+   COLOR HELPERS — derive toast shades from theme
+   ============================================ */
+
+/* Parse "#RRGGBB" → { r, g, b } */
+function hexToRgb(hex) {
+  const h = hex.replace('#', '');
+  return {
+    r: parseInt(h.substring(0, 2), 16),
+    g: parseInt(h.substring(2, 4), 16),
+    b: parseInt(h.substring(4, 6), 16),
+  };
+}
+
+/* Mix a color with white (amount 0..1 → more white) */
+function tint(hex, amount) {
+  const { r, g, b } = hexToRgb(hex);
+  return {
+    r: Math.round(r + (255 - r) * amount),
+    g: Math.round(g + (255 - g) * amount),
+    b: Math.round(b + (255 - b) * amount),
+  };
+}
+
+/* Mix a color with black (amount 0..1 → more black) */
+function shade(hex, amount) {
+  const { r, g, b } = hexToRgb(hex);
+  return {
+    r: Math.round(r * (1 - amount)),
+    g: Math.round(g * (1 - amount)),
+    b: Math.round(b * (1 - amount)),
+  };
+}
+
+function rgbaStr({ r, g, b }, a = 1) {
+  return `RGBA(${r}, ${g}, ${b}, ${a})`;
+}
+function cssRgba({ r, g, b }, a = 1) {
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+/* Build the full toast palette from a theme's primary color */
+function toastPalette(theme) {
+  const p = theme.primary;
+  return {
+    fill:     tint(p, 0.78),  // light background
+    icon:     shade(p, 0.45), // dark icon
+    title:    shade(p, 0.62), // darkest — title
+    subtitle: shade(p, 0.42), // medium — body
+  };
+}
+
+/* ============================================
+   CONTROL 01 — Success Toast
+   ============================================ */
+CanvasKit.registerControl({
+  name: 'Success Toast',
+  type: 'GroupContainer@1.5.0 · AutoLayout',
+  tag: 'toast',
+
+  renderPreview: (theme) => {
+    const p = toastPalette(theme);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; max-width: 440px;
+      padding: 10px 20px; height: 83px;
+      background: ${cssRgba(p.fill)};
+      border-radius: 20px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-sizing: border-box;
+    `;
+    wrap.innerHTML = `
+      <!-- Check icon -->
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="flex-shrink:0;">
+        <path d="M8 20 L17 29 L33 12" stroke="${cssRgba(p.icon)}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <!-- Text stack -->
+      <div style="flex:1; padding: 2px 10px; display:flex; flex-direction:column; gap:2px;">
+        <div style="color:${cssRgba(p.title)}; font-size:16px; font-weight:600; line-height:1.3;">Success</div>
+        <div style="color:${cssRgba(p.subtitle)}; font-size:11px; line-height:1.4;">You can access all the files in this folder.</div>
+      </div>
+      <!-- Close icon -->
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;">
+        <path d="M5 5 L15 15 M15 5 L5 15" stroke="${cssRgba(p.subtitle, 0.8)}" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    `;
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const p = toastPalette(theme);
+    return `- Container_Success_Toast:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      Fill: =${rgbaStr(p.fill, 1)}
+      Height: =83
+      LayoutAlignItems: =LayoutAlignItems.Center
+      LayoutDirection: =LayoutDirection.Horizontal
+      LayoutGap: =10
+      PaddingBottom: =10
+      PaddingLeft: =20
+      PaddingRight: =20
+      PaddingTop: =10
+      RadiusBottomLeft: =20
+      RadiusBottomRight: =20
+      RadiusTopLeft: =20
+      RadiusTopRight: =20
+      Width: =550
+      X: =500
+      Y: =76
+    Children:
+      - Icon_Success:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(p.icon, 1)}
+            Height: =40
+            Icon: =Icon.Check
+            LayoutMinHeight: =40
+            LayoutMinWidth: =40
+            Width: =40
+      - Container_Text_Stack:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =2
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =2
+          Children:
+            - Label_Title:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(p.title, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =30
+                  Size: =16
+                  Text: ="Success"
+            - Label_Subtitle:
+                Control: Label@2.5.1
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  Color: =${rgbaStr(p.subtitle, 1)}
+                  Font: =Font.'Segoe UI'
+                  Height: =25
+                  Size: =11
+                  Text: ="You can access all the files in this folder."
+      - Icon_Close:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(p.subtitle, 0.8)}
+            Height: =20
+            Icon: =Icon.Cancel
+            LayoutMinHeight: =20
+            LayoutMinWidth: =20
+            Width: =20`;
+  }
+});
+
+/* ============================================
+   CONTROL 02 — Error Toast
+   ============================================ */
+CanvasKit.registerControl({
+  name: 'Error Toast',
+  type: 'GroupContainer@1.5.0 · AutoLayout',
+  tag: 'toast',
+
+  renderPreview: (theme) => {
+    const p = toastPalette(theme);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; max-width: 440px;
+      padding: 10px 20px; height: 83px;
+      background: ${cssRgba(p.fill)};
+      border-radius: 20px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-sizing: border-box;
+    `;
+    wrap.innerHTML = `
+      <!-- Error (circled !) icon -->
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="flex-shrink:0;">
+        <circle cx="20" cy="20" r="14" stroke="${cssRgba(p.icon)}" stroke-width="2.2"/>
+        <path d="M20 13 L20 22" stroke="${cssRgba(p.icon)}" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="20" cy="26.5" r="1.5" fill="${cssRgba(p.icon)}"/>
+      </svg>
+      <!-- Text stack -->
+      <div style="flex:1; padding: 2px 10px; display:flex; flex-direction:column; gap:2px;">
+        <div style="color:${cssRgba(p.title)}; font-size:16px; font-weight:600; line-height:1.3;">Error</div>
+        <div style="color:${cssRgba(p.subtitle)}; font-size:11px; line-height:1.4;">Unable to save changes. Please try again.</div>
+      </div>
+      <!-- Close icon -->
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;">
+        <path d="M5 5 L15 15 M15 5 L5 15" stroke="${cssRgba(p.icon, 0.6)}" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    `;
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const p = toastPalette(theme);
+    return `- Container_Error_Toast:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      Fill: =${rgbaStr(p.fill, 1)}
+      Height: =83
+      LayoutAlignItems: =LayoutAlignItems.Center
+      LayoutDirection: =LayoutDirection.Horizontal
+      LayoutGap: =10
+      PaddingBottom: =10
+      PaddingLeft: =20
+      PaddingRight: =20
+      PaddingTop: =10
+      RadiusBottomLeft: =20
+      RadiusBottomRight: =20
+      RadiusTopLeft: =20
+      RadiusTopRight: =20
+      Width: =550
+      X: =500
+      Y: =302
+    Children:
+      - Icon_Error:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(p.icon, 1)}
+            Height: =40
+            Icon: =Icon.Error
+            LayoutMinHeight: =40
+            LayoutMinWidth: =40
+            Width: =40
+      - Container_Text_Stack_2:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =2
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =2
+          Children:
+            - Label_Title_2:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(p.title, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =30
+                  Size: =16
+                  Text: ="Error"
+            - Label_Subtitle_2:
+                Control: Label@2.5.1
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  Color: =${rgbaStr(p.subtitle, 1)}
+                  Font: =Font.'Segoe UI'
+                  Height: =25
+                  Size: =11
+                  Text: ="Unable to save changes. Please try again."
+      - Icon_Close_2:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(p.icon, 0.6)}
+            Height: =20
+            Icon: =Icon.Cancel
+            LayoutMinHeight: =20
+            LayoutMinWidth: =20
+            Width: =20`;
+  }
+});
+
+/* ============================================
+   CONTROL 03 — Warning Toast
+   ============================================ */
+CanvasKit.registerControl({
+  name: 'Warning Toast',
+  type: 'GroupContainer@1.5.0 · AutoLayout',
+  tag: 'toast',
+
+  renderPreview: (theme) => {
+    const p = toastPalette(theme);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; max-width: 440px;
+      padding: 10px 20px; height: 83px;
+      background: ${cssRgba(p.fill)};
+      border-radius: 20px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-sizing: border-box;
+    `;
+    wrap.innerHTML = `
+      <!-- Warning (triangle + !) icon -->
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="flex-shrink:0;">
+        <path d="M20 7 L34 31 L6 31 Z" stroke="${cssRgba(p.icon)}" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M20 16 L20 24" stroke="${cssRgba(p.icon)}" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="20" cy="27.5" r="1.4" fill="${cssRgba(p.icon)}"/>
+      </svg>
+      <!-- Text stack -->
+      <div style="flex:1; padding: 2px 10px; display:flex; flex-direction:column; gap:2px;">
+        <div style="color:${cssRgba(p.title)}; font-size:16px; font-weight:600; line-height:1.3;">Warning</div>
+        <div style="color:${cssRgba(p.subtitle)}; font-size:11px; line-height:1.4;">Your storage is nearly full. Please check.</div>
+      </div>
+      <!-- Close icon -->
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;">
+        <path d="M5 5 L15 15 M15 5 L5 15" stroke="${cssRgba(p.icon, 0.6)}" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    `;
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const p = toastPalette(theme);
+    return `- Container_Warning_Toast:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      Fill: =${rgbaStr(p.fill, 1)}
+      Height: =83
+      LayoutAlignItems: =LayoutAlignItems.Center
+      LayoutDirection: =LayoutDirection.Horizontal
+      LayoutGap: =10
+      PaddingBottom: =10
+      PaddingLeft: =20
+      PaddingRight: =20
+      PaddingTop: =10
+      RadiusBottomLeft: =20
+      RadiusBottomRight: =20
+      RadiusTopLeft: =20
+      RadiusTopRight: =20
+      Width: =550
+      X: =500
+      Y: =188
+    Children:
+      - Icon_Warning_3:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(p.icon, 1)}
+            Height: =40
+            Icon: =Icon.Warning
+            LayoutMinHeight: =40
+            LayoutMinWidth: =40
+            Width: =40
+      - Container_Text_Stack_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =2
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =2
+          Children:
+            - Label_Title_1:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(p.title, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =30
+                  Size: =16
+                  Text: ="Warning"
+            - Label_Subtitle_1:
+                Control: Label@2.5.1
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  Color: =${rgbaStr(p.subtitle, 1)}
+                  Font: =Font.'Segoe UI'
+                  Height: =25
+                  Size: =11
+                  Text: ="Your storage is nearly full. Please check."
+      - Icon_Close_1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(p.icon, 0.6)}
+            Height: =20
+            Icon: =Icon.Cancel
+            LayoutMinHeight: =20
+            LayoutMinWidth: =20
+            Width: =20`;
+  }
+});
+
+/* ============================================
+   CONTROL 04 — Save Confirmation Popup
+   ============================================ */
+
+/* Dedicated palette for confirm dialog — derived from theme primary */
+function confirmPalette(theme) {
+  const p = theme.primary;
+  return {
+    iconBadge:   tint(p, 0.55),   // soft theme color for check badge
+    cancelFill:  tint(p, 0.90),   // very pale tint
+    cancelText:  shade(p, 0.20),  // medium shade
+    confirmFill: tint(p, 0.75),   // light tint
+    confirmText: shade(p, 0.40),  // darker shade
+  };
+}
+
+CanvasKit.registerControl({
+  name: 'Save Confirmation Popup',
+  type: 'GroupContainer@1.5.0 · Modal',
+  tag: 'popup',
+
+  renderPreview: (theme) => {
+    const c = confirmPalette(theme);
+    const wrap = document.createElement('div');
+    // Scaled-down version of the modal (original card is 352x280)
+    wrap.style.cssText = `
+      position: relative;
+      width: 260px;
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 18px 0 14px;
+      display: flex; flex-direction: column; align-items: stretch;
+      gap: 12px;
+      box-shadow: 0 14px 40px -12px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.08);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    `;
+    wrap.innerHTML = `
+      <!-- Check badge icon -->
+      <div style="display:flex; justify-content:center; padding: 4px 0 2px;">
+        <svg width="56" height="56" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="32" stroke="${cssRgba(c.iconBadge)}" stroke-width="3"/>
+          <path d="M27 41 L36 50 L54 30" stroke="${cssRgba(c.iconBadge)}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <!-- Message -->
+      <div style="text-align:center; color:rgb(80,80,90); font-size:13px; font-weight:600; padding: 0 10px;">
+        保存しますか？
+      </div>
+      <!-- Buttons -->
+      <div style="display:flex; justify-content:space-between; gap:10px; padding: 2px 12px 4px;">
+        <button style="
+          flex:1;
+          border:none; cursor:pointer;
+          background: ${cssRgba(c.cancelFill)};
+          color: ${cssRgba(c.cancelText)};
+          padding: 8px 0;
+          border-radius: 13px;
+          font-size: 12px; font-weight: 400;
+          font-family: inherit;
+        ">いいえ</button>
+        <button style="
+          flex:1;
+          border:none; cursor:pointer;
+          background: ${cssRgba(c.confirmFill)};
+          color: ${cssRgba(c.confirmText)};
+          padding: 8px 0;
+          border-radius: 13px;
+          font-size: 12px; font-weight: 600;
+          font-family: inherit;
+        ">はい</button>
+      </div>
+    `;
+
+    // Outer container simulates the dark backdrop
+    const outer = document.createElement('div');
+    outer.style.cssText = `
+      background: rgba(0, 0, 0, 0.5);
+      padding: 22px 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    `;
+    outer.appendChild(wrap);
+    return outer;
+  },
+
+  buildYaml: (theme) => {
+    const c = confirmPalette(theme);
+    return `- ContainerPopup_Save:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      Fill: =RGBA(0, 0, 0, 0.5)
+      Height: =768
+      LayoutAlignItems: =LayoutAlignItems.Center
+      LayoutDirection: =LayoutDirection.Vertical
+      LayoutJustifyContent: =LayoutJustifyContent.Center
+      PaddingBottom: =8
+      PaddingLeft: =8
+      PaddingRight: =8
+      PaddingTop: =8
+      Width: =1365
+    Children:
+      - Container_Pastel_Save:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            AlignInContainer: =AlignInContainer.Center
+            DropShadow: =DropShadow.Semibold
+            Fill: =RGBA(255, 255, 255, 1)
+            FillPortions: =0
+            Height: =280
+            LayoutAlignItems: =LayoutAlignItems.Stretch
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingTop: =20
+            RadiusBottomLeft: =25
+            RadiusBottomRight: =25
+            RadiusTopLeft: =25
+            RadiusTopRight: =25
+            Width: =352
+          Children:
+            - Container_Icon_Save:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =100
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                Children:
+                  - Icon_Save_Check:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        Color: =${rgbaStr(c.iconBadge, 1)}
+                        Height: =80
+                        Icon: =Icon.CheckBadge
+                        Width: =80
+            - Label_Message_Save:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =RGBA(80, 80, 90, 1)
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Size: =15
+                  Text: ="保存しますか？"
+            - Container_Buttons_Save:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =70
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  PaddingBottom: =10
+                  PaddingLeft: =15
+                  PaddingRight: =15
+                Children:
+                  - btnCancel_Save:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderStyle: =BorderStyle.None
+                        Color: =${rgbaStr(c.cancelText, 1)}
+                        Fill: =${rgbaStr(c.cancelFill, 1)}
+                        FontWeight: =FontWeight.Normal
+                        LayoutMinWidth: =130
+                        RadiusBottomLeft: =15
+                        RadiusBottomRight: =15
+                        RadiusTopLeft: =15
+                        RadiusTopRight: =15
+                        Size: =14
+                        Text: ="いいえ"
+                  - btnConfirm_Save:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderStyle: =BorderStyle.None
+                        Color: =${rgbaStr(c.confirmText, 1)}
+                        Fill: =${rgbaStr(c.confirmFill, 1)}
+                        LayoutMinWidth: =130
+                        RadiusBottomLeft: =15
+                        RadiusBottomRight: =15
+                        RadiusTopLeft: =15
+                        RadiusTopRight: =15
+                        Size: =14
+                        Text: ="はい"`;
+  }
+});
+
+/* ============================================
+   CONTROL 05 — Delete Confirmation Popup
+   ============================================ */
+
+/* Palette for delete dialog — two-tone: theme-derived cancel (safe)
+   and theme-derived confirm (still warning-shaped via warning icon).
+   Both buttons derive from the same theme primary so the card stays cohesive. */
+function deletePalette(theme) {
+  const p = theme.primary;
+  return {
+    icon:        tint(p, 0.45),   // theme-tinted warning icon
+    cancelFill:  tint(p, 0.88),   // very pale
+    cancelText:  shade(p, 0.10),  // light shade
+    confirmFill: tint(p, 0.72),   // light tint (slightly stronger than cancel)
+    confirmText: shade(p, 0.45),  // darker shade (more emphasis)
+  };
+}
+
+CanvasKit.registerControl({
+  name: 'Delete Confirmation Popup',
+  type: 'GroupContainer@1.5.0 · Modal',
+  tag: 'popup',
+
+  renderPreview: (theme) => {
+    const c = deletePalette(theme);
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      position: relative;
+      width: 260px;
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 18px 0 14px;
+      display: flex; flex-direction: column; align-items: stretch;
+      gap: 12px;
+      box-shadow: 0 14px 40px -12px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.08);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    `;
+    wrap.innerHTML = `
+      <!-- Warning triangle icon -->
+      <div style="display:flex; justify-content:center; padding: 4px 0 2px;">
+        <svg width="56" height="56" viewBox="0 0 80 80" fill="none">
+          <path d="M40 14 L68 62 L12 62 Z" stroke="${cssRgba(c.icon)}" stroke-width="3.5" stroke-linejoin="round"/>
+          <path d="M40 32 L40 47" stroke="${cssRgba(c.icon)}" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="40" cy="54" r="2.3" fill="${cssRgba(c.icon)}"/>
+        </svg>
+      </div>
+      <!-- Message -->
+      <div style="text-align:center; color:rgb(80,80,90); font-size:13px; font-weight:600; padding: 0 10px;">
+        本当に削除しますか？
+      </div>
+      <!-- Buttons -->
+      <div style="display:flex; justify-content:space-between; gap:10px; padding: 2px 12px 4px;">
+        <button style="
+          flex:1;
+          border:none; cursor:pointer;
+          background: ${cssRgba(c.cancelFill)};
+          color: ${cssRgba(c.cancelText)};
+          padding: 8px 0;
+          border-radius: 13px;
+          font-size: 12px; font-weight: 400;
+          font-family: inherit;
+        ">いいえ</button>
+        <button style="
+          flex:1;
+          border:none; cursor:pointer;
+          background: ${cssRgba(c.confirmFill)};
+          color: ${cssRgba(c.confirmText)};
+          padding: 8px 0;
+          border-radius: 13px;
+          font-size: 12px; font-weight: 600;
+          font-family: inherit;
+        ">はい</button>
+      </div>
+    `;
+
+    // Backdrop wrapper
+    const outer = document.createElement('div');
+    outer.style.cssText = `
+      background: rgba(0, 0, 0, 0.5);
+      padding: 22px 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    `;
+    outer.appendChild(wrap);
+    return outer;
+  },
+
+  buildYaml: (theme) => {
+    const c = deletePalette(theme);
+    return `- ContainerPopup:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      Fill: =RGBA(0, 0, 0, 0.5)
+      Height: =768
+      LayoutAlignItems: =LayoutAlignItems.Center
+      LayoutDirection: =LayoutDirection.Vertical
+      LayoutJustifyContent: =LayoutJustifyContent.Center
+      PaddingBottom: =8
+      PaddingLeft: =8
+      PaddingRight: =8
+      PaddingTop: =8
+      Width: =1365
+    Children:
+      - Container_Pastel:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            AlignInContainer: =AlignInContainer.Center
+            DropShadow: =DropShadow.Semibold
+            Fill: =RGBA(255, 255, 255, 1)
+            FillPortions: =0
+            Height: =280
+            LayoutAlignItems: =LayoutAlignItems.Stretch
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingTop: =20
+            RadiusBottomLeft: =25
+            RadiusBottomRight: =25
+            RadiusTopLeft: =25
+            RadiusTopRight: =25
+            Width: =352
+            X: =496
+            Y: =236
+          Children:
+            - Container_Icon:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =100
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                Children:
+                  - Icon_Warning_6:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        Color: =${rgbaStr(c.icon, 1)}
+                        Height: =80
+                        Icon: =Icon.Warning
+                        Width: =80
+            - Label_Message_5:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =RGBA(80, 80, 90, 1)
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Size: =15
+                  Text: ="本当に削除しますか？"
+            - Container_Buttons:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =70
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  PaddingBottom: =10
+                  PaddingLeft: =15
+                  PaddingRight: =15
+                Children:
+                  - btnCancel:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderStyle: =BorderStyle.None
+                        Color: =${rgbaStr(c.cancelText, 1)}
+                        Fill: =${rgbaStr(c.cancelFill, 1)}
+                        FontWeight: =FontWeight.Normal
+                        LayoutMinWidth: =130
+                        RadiusBottomLeft: =15
+                        RadiusBottomRight: =15
+                        RadiusTopLeft: =15
+                        RadiusTopRight: =15
+                        Size: =14
+                        Text: ="いいえ"
+                  - btnConfirm:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderStyle: =BorderStyle.None
+                        Color: =${rgbaStr(c.confirmText, 1)}
+                        Fill: =${rgbaStr(c.confirmFill, 1)}
+                        LayoutMinWidth: =130
+                        RadiusBottomLeft: =15
+                        RadiusBottomRight: =15
+                        RadiusTopLeft: =15
+                        RadiusTopRight: =15
+                        Size: =14
+                        Text: ="はい"`;
+  }
+});
+
+/* ============================================
+   CONTROL 06 — Tab Navigation Bar
+   ============================================ */
+
+function tabPalette(theme) {
+  const p = theme.primary;
+  return {
+    activeFill:  tint(p, 0.88),   // very pale theme fill (rendered at 0.5 alpha in preview)
+    activeIcon:  tint(p, 0.25),   // medium theme shade (matches underline)
+    activeLabel: shade(p, 0.22),  // darker theme shade
+  };
+}
+
+CanvasKit.registerControl({
+  name: 'Tab Navigation Bar',
+  type: 'Gallery@2.15.0 · Horizontal',
+  tag: 'tabs',
+
+  renderPreview: (theme) => {
+    const c = tabPalette(theme);
+    const tabs = [
+      { name: 'New',        icon: 'add' },
+      { name: 'Processing', icon: 'sync' },
+      { name: 'Complete',   icon: 'check' },
+      { name: 'Return',     icon: 'undo' },
+    ];
+
+    // SVG icon snippets (stroke-based; color applied via stroke=currentColor)
+    const ICONS = {
+      add:   '<path d="M10 4 L10 16 M4 10 L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      sync:  '<path d="M4.5 8 A5.5 5.5 0 0 1 15 7 L15 4 M15 7 L18 5.5 M15.5 12 A5.5 5.5 0 0 1 5 13 L5 16 M5 13 L2 14.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+      check: '<path d="M4 10 L8 14 L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+      undo:  '<path d="M6 7 L3 10 L6 13 M3 10 L13 10 A4 4 0 0 1 17 14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    };
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      width: 100%;
+      max-width: 480px;
+      background: #FFFFFF;
+      border-radius: 6px;
+      display: flex;
+      align-items: stretch;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      height: 48px;
+    `;
+
+    // Active tab index tracked locally in the preview for interactivity
+    const state = { active: 0 };
+
+    function render() {
+      wrap.innerHTML = tabs.map((t, i) => {
+        const isActive = i === state.active;
+        const iconColor  = isActive ? cssRgba(c.activeIcon)  : 'rgb(170, 170, 185)';
+        const labelColor = isActive ? cssRgba(c.activeLabel) : 'rgb(150, 150, 165)';
+        // Active bg: pale theme tint at 50% alpha (matches 0.5 alpha in YAML)
+        const bgColor    = isActive ? cssRgba(c.activeFill, 0.5) : 'transparent';
+        return `
+          <div data-idx="${i}" style="
+            flex: 1;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: ${bgColor};
+            cursor: pointer;
+            position: relative;
+            transition: background 0.18s ease;
+          ">
+            <span style="color:${iconColor}; display:inline-flex; transition: color 0.18s ease;">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">${ICONS[t.icon]}</svg>
+            </span>
+            <span style="color:${labelColor}; font-size:12px; font-weight:${isActive ? 600 : 400}; transition: color 0.18s ease;">${t.name}</span>
+            ${isActive ? `<span style="
+              position: absolute; bottom: 0; left: 14%;
+              width: 72%; height: 2px;
+              background: ${cssRgba(c.activeIcon)};
+              border-radius: 2px 2px 0 0;
+            "></span>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      wrap.querySelectorAll('[data-idx]').forEach(el => {
+        el.addEventListener('click', () => {
+          state.active = Number(el.dataset.idx);
+          render();
+        });
+      });
+    }
+    render();
+
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const c = tabPalette(theme);
+    return `- tabContainer_5:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      Height: =76
+      Width: =1366
+      Y: =170
+    Children:
+      - GalleryTabs_5:
+          Control: Gallery@2.15.0
+          Variant: BrowseLayout_Horizontal_TwoTextOneImageVariant_ver5.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderStyle: =BorderStyle.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =76
+            Items: |-
+              =Table(
+                  { Name: "New", Key: "NEW", Icon: Icon.Add },
+                  { Name: "Processing", Key: "PROCESSING", Icon: Icon.Sync },
+                  { Name: "Complete", Key: "COMPLETE", Icon: Icon.Check },
+                  { Name: "Return", Key: "RETURN", Icon: Icon.Undo }
+              )
+            OnSelect: =Set(varSelectedTab, ThisItem.Key)
+            TemplateFill: =If(ThisItem.Key = varSelectedTab, ${rgbaStr(c.activeFill, 0.5)}, RGBA(0, 0, 0, 0))
+            TemplateSize: =244
+            Width: =1366
+          Children:
+            - Icon2_7:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Color: =If(ThisItem.Key = varSelectedTab, ${rgbaStr(c.activeIcon, 1)}, RGBA(170, 170, 185, 1))
+                  Height: =36
+                  Icon: =ThisItem.Icon
+                  OnSelect: =Select(Parent)
+                  Width: =36
+                  X: =30
+                  Y: =20
+            - Label5_5:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Color: =If(ThisItem.Key = varSelectedTab, ${rgbaStr(c.activeLabel, 1)}, RGBA(150, 150, 165, 1))
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =If(ThisItem.Key = varSelectedTab, FontWeight.Semibold, FontWeight.Normal)
+                  OnSelect: =Select(Parent)
+                  Size: =14
+                  Text: =ThisItem.Name
+                  X: =74
+                  Y: =20
+            - Rectangle1_5:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =${rgbaStr(c.activeIcon, 1)}
+                  Height: =3
+                  OnSelect: =Select(Parent)
+                  Visible: =ThisItem.Key = varSelectedTab
+                  Width: =200
+                  X: =22
+                  Y: =70`;
+  }
+});
+
+/* ============================================
+   CONTROL 07 — Sidebar Navigation
+   ============================================ */
+
+function sidebarPalette(theme) {
+  const p = theme.primary;
+  return {
+    header:    tint(p, 0.45),   // medium — brand/header text
+    divider:   tint(p, 0.86),   // very pale line
+    activeFill:tint(p, 0.86),   // same pale (rendered at 0.6 alpha)
+    indicator: tint(p, 0.25),   // stronger — indicator bar + active icon
+    activeLabel: shade(p, 0.30),// darker — active label
+  };
+}
+
+CanvasKit.registerControl({
+  name: 'Sidebar Navigation',
+  type: 'GroupContainer@1.5.0 · Vertical Gallery',
+  tag: 'nav',
+
+  renderPreview: (theme) => {
+    const c = sidebarPalette(theme);
+    const items = [
+      { name: 'Home',      icon: 'home' },
+      { name: 'Orders',    icon: 'doc' },
+      { name: 'Products',  icon: 'db' },
+      { name: 'Customers', icon: 'people' },
+    ];
+
+    const ICONS = {
+      home:   '<path d="M3 10 L10 4 L17 10 M5 9 L5 16 L15 16 L15 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+      doc:    '<path d="M5 3 L13 3 L15 5 L15 17 L5 17 Z M13 3 L13 5 L15 5 M7 9 L13 9 M7 12 L13 12 M7 15 L11 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+      db:     '<ellipse cx="10" cy="5" rx="6" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M4 5 L4 10 A6 2 0 0 0 16 10 L16 5 M4 10 L4 15 A6 2 0 0 0 16 15 L16 10" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+      people: '<circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2.5 16 C2.5 13 4.5 11.5 7 11.5 C9.5 11.5 11.5 13 11.5 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="13.5" cy="6" r="1.8" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M11 15 C11 13 12.5 12 13.5 12 C15.5 12 17 13 17 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>',
+    };
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      width: 185px;
+      background: #FFFFFF;
+      border-radius: 6px;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      padding: 16px 0 0;
+      display: flex; flex-direction: column;
+    `;
+
+    const state = { active: 0 };
+
+    function render() {
+      wrap.innerHTML = `
+        <!-- Brand header -->
+        <div style="
+          text-align: center;
+          color: ${cssRgba(c.header)};
+          font-weight: 700;
+          font-size: 14px;
+          letter-spacing: 0.04em;
+          padding: 4px 0 12px;
+        ">PASONA</div>
+        <!-- Divider -->
+        <div style="
+          height: 1px;
+          background: ${cssRgba(c.divider)};
+          margin: 0 0 6px;
+        "></div>
+        <!-- Nav items -->
+        <div style="display: flex; flex-direction: column;">
+          ${items.map((it, i) => {
+            const isActive = i === state.active;
+            const iconColor  = isActive ? cssRgba(c.indicator)   : 'rgb(170, 170, 185)';
+            const labelColor = isActive ? cssRgba(c.activeLabel) : 'rgb(150, 150, 165)';
+            const bgColor    = isActive ? cssRgba(c.activeFill, 0.6) : 'transparent';
+            return `
+              <div data-idx="${i}" style="
+                position: relative;
+                display: flex; align-items: center; gap: 12px;
+                padding: 10px 14px;
+                background: ${bgColor};
+                cursor: pointer;
+                transition: background 0.18s ease;
+              ">
+                ${isActive ? `<span style="
+                  position: absolute; left: 0; top: 50%;
+                  transform: translateY(-50%);
+                  width: 2px; height: 22px;
+                  background: ${cssRgba(c.indicator)};
+                  border-radius: 0 2px 2px 0;
+                "></span>` : ''}
+                <span style="color:${iconColor}; display:inline-flex; flex-shrink:0;">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">${ICONS[it.icon]}</svg>
+                </span>
+                <span style="color:${labelColor}; font-size:12.5px; font-weight:${isActive ? 600 : 400};">${it.name}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      wrap.querySelectorAll('[data-idx]').forEach(el => {
+        el.addEventListener('click', () => {
+          state.active = Number(el.dataset.idx);
+          render();
+        });
+      });
+    }
+    render();
+
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const c = sidebarPalette(theme);
+    return `- navContainer_3:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      Height: =768
+      LayoutAlignItems: =LayoutAlignItems.Stretch
+      LayoutDirection: =LayoutDirection.Vertical
+      PaddingTop: =20
+      Width: =185
+      X: =796
+    Children:
+      - navHeader_3:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =${rgbaStr(c.header, 1)}
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Bold
+            Height: =50
+            Size: =18
+            Text: ="PASONA"
+      - navDivider_3:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =${rgbaStr(c.divider, 1)}
+            Height: =1
+      - GalleryNav_3:
+          Control: Gallery@2.15.0
+          Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+          Properties:
+            BorderStyle: =BorderStyle.None
+            Fill: =RGBA(255, 255, 255, 1)
+            FillPortions: =0
+            Height: =280
+            Items: |-
+              =Table(
+                  { Name: "Home", Key: "HOME", Icon: Icon.Home },
+                  { Name: "Orders", Key: "ORDERS", Icon: Icon.DocumentWithContent },
+                  { Name: "Products", Key: "PRODUCTS", Icon: Icon.Database },
+                  { Name: "Customers", Key: "CUSTOMERS", Icon: Icon.People }
+              )
+            OnSelect: =Set(varSelectedNav, ThisItem.Key)
+            TemplateFill: =If(ThisItem.Key = varSelectedNav, ${rgbaStr(c.activeFill, 0.6)}, RGBA(0, 0, 0, 0))
+            TemplateSize: =56
+            Width: =Parent.Width
+          Children:
+            - navIndicator_3:
+                Control: Rectangle@2.3.0
+                Properties:
+                  Fill: =${rgbaStr(c.indicator, 1)}
+                  Height: =32
+                  Visible: =ThisItem.Key = varSelectedNav
+                  Width: =1
+                  Y: =12
+            - navIcon_3:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  Color: =If(ThisItem.Key = varSelectedNav, ${rgbaStr(c.indicator, 1)}, RGBA(170, 170, 185, 1))
+                  Height: =28
+                  Icon: =ThisItem.Icon
+                  OnSelect: =Select(Parent)
+                  Width: =28
+                  X: =14
+                  Y: =14
+            - navLabel_3:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =If(ThisItem.Key = varSelectedNav, ${rgbaStr(c.activeLabel, 1)}, RGBA(150, 150, 165, 1))
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =If(ThisItem.Key = varSelectedNav, FontWeight.Semibold, FontWeight.Normal)
+                  Height: =56
+                  OnSelect: =Select(Parent)
+                  Size: =14
+                  Text: =ThisItem.Name
+                  Width: =140
+                  X: =47`;
+  }
+});
+/* ============================================
+   CONTROL 08 — Search Filter Bar
+   ============================================ */
+
+CanvasKit.registerControl({
+  name: 'Search Filter Bar',
+  type: 'GroupContainer@1.5.0 · ManualLayout',
+  tag: 'filter',
+
+  renderPreview: (theme) => {
+    const primary = theme.primary;          // e.g. "#4F46E5"
+    const borderC = cssRgba(tint(primary, 0.55));
+    const hoverBg = cssRgba(tint(primary, 0.92));
+    const labelC  = cssRgba(shade(primary, 0.1));
+    const white   = '#FFFFFF';
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `
+      width: 100%;
+      background: ${white};
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      box-sizing: border-box;
+      flex-wrap: wrap;
+    `;
+
+    const fieldStyle  = `display:flex;flex-direction:column;gap:5px;`;
+    const labelStyle  = `font-size:11px;font-weight:600;color:${labelC};`;
+    const inputStyle  = `border:1px solid ${borderC};border-radius:6px;padding:6px 10px;font-size:12px;font-family:'Segoe UI',system-ui,sans-serif;color:#333;background:${white};outline:none;width:148px;height:32px;box-sizing:border-box;`;
+    const dateStyle   = inputStyle.replace('width:148px', 'width:140px');
+
+    const iconBtn = (svgInner) => `
+      <div style="position:absolute;right:0;top:0;bottom:0;width:26px;background:${primary};border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+        ${svgInner}
+      </div>`;
+
+    const chevronIcon = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 4 L6 8 L10 4" stroke="${white}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const calIcon     = `<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="13" rx="2" stroke="${white}" stroke-width="1.5"/><path d="M5 1v3M11 1v3M1 6h14" stroke="${white}" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+
+    const dropdownField = (label) => `
+      <div style="${fieldStyle}">
+        <span style="${labelStyle}">${label}</span>
+        <div style="position:relative;display:inline-block;">
+          <input type="text" style="${inputStyle}padding-right:30px;" disabled />
+          ${iconBtn(chevronIcon)}
+        </div>
+      </div>`;
+
+    const dateField = (label) => `
+      <div style="${fieldStyle}">
+        <span style="${labelStyle}">${label}</span>
+        <div style="position:relative;display:inline-block;">
+          <input type="text" placeholder="yyyy/mm/dd" style="${dateStyle}padding-right:30px;" disabled />
+          ${iconBtn(calIcon)}
+        </div>
+      </div>`;
+
+    wrap.innerHTML = `
+      <div style="${fieldStyle}">
+        <span style="${labelStyle}">会社名</span>
+        <input type="text" style="${inputStyle}" disabled />
+      </div>
+      ${dropdownField('出荷ステータス')}
+      ${dropdownField('入金ステータス')}
+      ${dateField('受注日　From')}
+      ${dateField('受注日　To')}
+      <div style="display:flex;gap:8px;margin-left:auto;">
+        <button style="height:32px;padding:0 18px;background:${primary};color:${white};border:none;border-radius:6px;font-size:12px;font-family:'Segoe UI',system-ui,sans-serif;font-weight:600;cursor:default;white-space:nowrap;">検索</button>
+        <button style="height:32px;padding:0 18px;background:${white};color:${primary};border:1px solid ${borderC};border-radius:6px;font-size:12px;font-family:'Segoe UI',system-ui,sans-serif;font-weight:600;cursor:default;white-space:nowrap;">クリア</button>
+      </div>
+    `;
+
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const p        = theme.primary;
+    const border   = tint(p, 0.55);
+    const hoverFill= tint(p, 0.92);
+    const pressed  = shade(p, 0.45);
+    const primary  = hexToRgb(p);
+    return `- Container10_3:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      Height: =96
+      RadiusBottomLeft: =16
+      RadiusBottomRight: =16
+      RadiusTopLeft: =16
+      RadiusTopRight: =16
+      Width: =1320
+      X: =28
+      Y: =433
+    Children:
+      - Label6_15:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(primary, 1)}
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Semibold
+            Height: =28
+            Size: =11
+            Text: ="会社名"
+            Width: =200
+            X: =16
+            Y: =8
+      - TextInput1_3:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =${rgbaStr(border, 1)}
+            Font: =Font.'Segoe UI'
+            HoverBorderColor: =${rgbaStr(primary, 1)}
+            HoverFill: =${rgbaStr(hoverFill, 1)}
+            PaddingLeft: =8
+            Width: =200
+            X: =16
+            Y: =38
+      - Label6_16:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(primary, 1)}
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Semibold
+            Height: =28
+            Size: =11
+            Text: ="出荷ステータス"
+            Width: =200
+            X: =232
+            Y: =8
+      - Dropdown1_6:
+          Control: Classic/DropDown@2.3.1
+          Properties:
+            BorderColor: =${rgbaStr(border, 1)}
+            ChevronBackground: =${rgbaStr(primary, 1)}
+            ChevronFill: =RGBA(255, 255, 255, 1)
+            ChevronHoverBackground: =${rgbaStr(shade(p, 0.15), 1)}
+            ChevronHoverFill: =RGBA(255, 255, 255, 1)
+            Font: =Font.'Segoe UI'
+            HoverFill: =${rgbaStr(hoverFill, 1)}
+            Items.Value: =Value
+            PressedColor: =RGBA(255, 255, 255, 1)
+            PressedFill: =${rgbaStr(pressed, 1)}
+            SelectionColor: =RGBA(255, 255, 255, 1)
+            SelectionFill: =${rgbaStr(primary, 1)}
+            Width: =200
+            X: =232
+            Y: =38
+      - Label6_17:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(primary, 1)}
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Semibold
+            Height: =28
+            Size: =11
+            Text: ="入金ステータス"
+            Width: =200
+            X: =448
+            Y: =8
+      - Dropdown1_7:
+          Control: Classic/DropDown@2.3.1
+          Properties:
+            BorderColor: =${rgbaStr(border, 1)}
+            ChevronBackground: =${rgbaStr(primary, 1)}
+            ChevronFill: =RGBA(255, 255, 255, 1)
+            ChevronHoverBackground: =${rgbaStr(shade(p, 0.15), 1)}
+            ChevronHoverFill: =RGBA(255, 255, 255, 1)
+            Font: =Font.'Segoe UI'
+            HoverFill: =${rgbaStr(hoverFill, 1)}
+            Items.Value: =Value
+            PressedColor: =RGBA(255, 255, 255, 1)
+            PressedFill: =${rgbaStr(pressed, 1)}
+            SelectionColor: =RGBA(255, 255, 255, 1)
+            SelectionFill: =${rgbaStr(primary, 1)}
+            Width: =200
+            X: =448
+            Y: =38
+      - Label6_18:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(primary, 1)}
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Semibold
+            Height: =28
+            Size: =11
+            Text: ="受注日　From"
+            Width: =175
+            X: =664
+            Y: =8
+      - DatePicker1_6:
+          Control: Classic/DatePicker@2.6.0
+          Properties:
+            BorderColor: =${rgbaStr(border, 1)}
+            Font: =Font.'Segoe UI'
+            IconBackground: =${rgbaStr(primary, 1)}
+            IconFill: =RGBA(255, 255, 255, 1)
+            Size: =13
+            Width: =175
+            X: =664
+            Y: =38
+      - Label6_19:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(primary, 1)}
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Semibold
+            Height: =28
+            Size: =11
+            Text: ="受注日　To"
+            Width: =175
+            X: =855
+            Y: =8
+      - DatePicker1_7:
+          Control: Classic/DatePicker@2.6.0
+          Properties:
+            BorderColor: =${rgbaStr(border, 1)}
+            Font: =Font.'Segoe UI'
+            IconBackground: =${rgbaStr(primary, 1)}
+            IconFill: =RGBA(255, 255, 255, 1)
+            Size: =13
+            Width: =175
+            X: =855
+            Y: =38
+      - btnSearch_2:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderStyle: =BorderStyle.None
+            Color: =RGBA(255, 255, 255, 1)
+            Fill: =${rgbaStr(primary, 1)}
+            Font: =Font.'Segoe UI'
+            Height: =38
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =${rgbaStr(shade(p, 0.1), 1)}
+            PressedColor: =RGBA(255, 255, 255, 1)
+            PressedFill: =${rgbaStr(pressed, 1)}
+            Size: =13
+            Text: ="検索"
+            Width: =90
+            X: =1126
+            Y: =38
+      - btnClear_2:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =${rgbaStr(border, 1)}
+            Color: =${rgbaStr(primary, 1)}
+            Fill: =RGBA(255, 255, 255, 1)
+            Font: =Font.'Segoe UI'
+            Height: =38
+            HoverColor: =${rgbaStr(primary, 1)}
+            HoverFill: =${rgbaStr(hoverFill, 1)}
+            PressedColor: =${rgbaStr(pressed, 1)}
+            PressedFill: =${rgbaStr(tint(p, 0.75), 1)}
+            Size: =13
+            Text: ="クリア"
+            Width: =90
+            X: =1222
+            Y: =38`;
+  }
+});
+
+/* ============================================
+   CONTROL 09 — Gallery Table
+   ============================================ */
+
+CanvasKit.registerControl({
+  name: 'Gallery Table',
+  type: 'GroupContainer@1.5.0 · Gallery@2.15.0',
+  tag: 'gallery',
+
+  renderPreview: (theme) => {
+    const p             = theme.primary;
+    const primary       = hexToRgb(p);
+    const headerBgCss   = cssRgba(tint(p, 0.88));
+    const headerTxtCss  = cssRgba(shade(p, 0.35));
+    const accentCss     = cssRgba(primary);
+    const iconBgCss     = cssRgba(tint(p, 0.72));
+    const sepCss        = cssRgba(tint(p, 0.78));
+    const selBgCss      = cssRgba(tint(p, 0.82), 0.5);
+    const altBgCss      = cssRgba(tint(p, 0.96));
+
+    const rows = [
+      { name: 'Tanaka Corp',    date: '2025-04-01', details: 'Spring order batch — priority shipping requested',  status: '出荷済み', selected: true  },
+      { name: 'Suzuki Ltd',     date: '2025-04-03', details: 'Standard order — awaiting warehouse confirmation',  status: '処理中',   selected: false },
+      { name: 'Yamada Trading', date: '2025-04-05', details: 'Bulk items — partial delivery approved',            status: '入金確認', selected: false },
+      { name: 'Honda Partners', date: '2025-04-08', details: 'Express courier requested — fragile goods',         status: '出荷済み', selected: false },
+      { name: 'Kato Supplies',  date: '2025-04-10', details: 'Monthly restock — no special instructions',        status: '処理中',   selected: false },
+    ];
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `width:100%;background:#fff;border-radius:10px;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,0.07);box-sizing:border-box;`;
+
+    const cols = [
+      { label: '',        w: '5%'  },
+      { label: 'Name',    w: '18%' },
+      { label: 'Date',    w: '13%' },
+      { label: 'Details', w: '42%' },
+      { label: 'Status',  w: '16%' },
+      { label: '',        w: '6%'  },
+    ];
+
+    const headerCells = cols.map(c => `<div style="width:${c.w};padding:0 10px;font-size:11.5px;font-weight:600;color:${headerTxtCss};display:flex;align-items:center;">${c.label}</div>`).join('');
+
+    const bodyRows = rows.map((r, i) => {
+      const bg = r.selected ? selBgCss : (i % 2 === 0 ? '#fff' : altBgCss);
+      return `
+        <div style="display:flex;align-items:center;height:46px;background:${bg};position:relative;box-sizing:border-box;">
+          ${r.selected ? `<div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${accentCss};border-radius:0 2px 2px 0;"></div>` : ''}
+          <div style="width:5%;display:flex;align-items:center;justify-content:center;">
+            <div style="width:30px;height:30px;border-radius:8px;background:${iconBgCss};display:flex;align-items:center;justify-content:center;">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M5 3 L13 3 L15 5 L15 17 L5 17 Z M13 3 L13 5 L15 5 M7 9 L13 9 M7 12 L13 12 M7 15 L11 15" stroke="${accentCss}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div style="width:18%;padding:0 8px;font-size:12px;font-weight:${r.selected ? 600 : 400};color:${r.selected ? headerTxtCss : '#464655'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.name}</div>
+          <div style="width:13%;padding:0 8px;font-size:11.5px;color:#888899;">${r.date}</div>
+          <div style="width:42%;padding:0 8px;font-size:11.5px;color:#9696A5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.details}</div>
+          <div style="width:16%;padding:0 8px;font-size:11px;font-weight:600;color:${accentCss};">${r.status}</div>
+          <div style="width:6%;display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 5 L13 10 L7 15" stroke="${r.selected ? accentCss : '#C8C8D2'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="position:absolute;bottom:0;left:16px;right:16px;height:1px;background:${sepCss};"></div>
+        </div>`;
+    }).join('');
+
+    wrap.innerHTML = `
+      <div style="display:flex;align-items:center;height:40px;background:${headerBgCss};">${headerCells}</div>
+      <div>${bodyRows}</div>`;
+
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const p         = theme.primary;
+    const primary   = hexToRgb(p);
+    const headerBg  = tint(p, 0.88);
+    const headerTxt = shade(p, 0.35);
+    const accentTxt = primary;
+    const iconBg    = tint(p, 0.72);
+    const sepColor  = tint(p, 0.78);
+    const selBg     = tint(p, 0.82);
+    const altBg     = tint(p, 0.96);
+
+    return `- galleryTableLikecontainer_1:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      Height: =405
+      RadiusBottomLeft: =12
+      RadiusBottomRight: =12
+      RadiusTopLeft: =12
+      RadiusTopRight: =12
+      Width: =1366
+      Y: =363
+    Children:
+      - headerRow:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            Fill: =${rgbaStr(headerBg, 1)}
+            Height: =44
+            RadiusTopLeft: =12
+            RadiusTopRight: =12
+            Width: =1366
+          Children:
+            - headerIcon:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(accentTxt, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =44
+                  Size: =12
+                  Text: =""
+                  Width: =72
+            - headerName:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(headerTxt, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =44
+                  Size: =12
+                  Text: ="Name"
+                  Width: =200
+                  X: =72
+            - headerDate:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(headerTxt, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =44
+                  Size: =12
+                  Text: ="Date"
+                  Width: =160
+                  X: =272
+            - headerDetails:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(headerTxt, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =44
+                  Size: =12
+                  Text: ="Details"
+                  Width: =500
+                  X: =432
+            - headerStatus:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(headerTxt, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =44
+                  Size: =12
+                  Text: ="Status"
+                  Width: =196
+                  X: =932
+      - Gallery2_6:
+          Control: Gallery@2.15.0
+          Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderStyle: =BorderStyle.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =361
+            TemplateFill: =If(ThisItem.IsSelected, ${rgbaStr(selBg, 0.5)}, If(Mod(ThisItem.ID, 2) = 0, ${rgbaStr(altBg, 1)}, RGBA(255, 255, 255, 1)))
+            TemplateSize: =52
+            Width: =1366
+            Y: =44
+          Children:
+            - selectedIndicator:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =${rgbaStr(accentTxt, 1)}
+                  Height: =Parent.TemplateHeight
+                  Visible: =ThisItem.IsSelected
+                  Width: =3
+            - cellIcon:
+                Control: GroupContainer@1.5.0
+                Variant: ManualLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =${rgbaStr(iconBg, 1)}
+                  Height: =36
+                  RadiusBottomLeft: =10
+                  RadiusBottomRight: =10
+                  RadiusTopLeft: =10
+                  RadiusTopRight: =10
+                  Width: =36
+                  X: =headerIcon.X + (headerIcon.Width - Self.Width) / 2
+                  Y: =(Parent.TemplateHeight - Self.Height) / 2
+                Children:
+                  - cellIconInner:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        Color: =${rgbaStr(accentTxt, 1)}
+                        Height: =20
+                        Icon: =Icon.DocumentWithContent
+                        OnSelect: =
+                        Width: =20
+                        X: =8
+                        Y: =8
+            - cellName:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =If(ThisItem.IsSelected, ${rgbaStr(headerTxt, 1)}, RGBA(70, 70, 85, 1))
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =8
+                  PaddingTop: =0
+                  Text: =ThisItem.SampleHeading
+                  Width: =headerName.Width
+                  X: =headerName.X
+            - cellDate:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(120, 120, 135, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =8
+                  PaddingTop: =0
+                  Size: =12
+                  Text: =ThisItem.SampleHeading
+                  Width: =headerDate.Width
+                  X: =headerDate.X
+            - cellDetails:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(150, 150, 165, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =8
+                  PaddingTop: =0
+                  Size: =12
+                  Text: =ThisItem.SampleText
+                  Width: =headerDetails.Width
+                  X: =headerDetails.X
+            - cellStatus:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =${rgbaStr(accentTxt, 1)}
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  PaddingTop: =0
+                  Size: =11
+                  Text: =ThisItem.SampleHeading
+                  Width: =headerStatus.Width
+                  X: =headerStatus.X
+            - cellArrow:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Color: =If(ThisItem.IsSelected, ${rgbaStr(accentTxt, 1)}, RGBA(200, 200, 210, 1))
+                  Height: =32
+                  Icon: =Icon.ChevronRight
+                  OnSelect: =Select(Parent)
+                  PaddingBottom: =10
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  PaddingTop: =10
+                  Width: =32
+                  X: =Parent.TemplateWidth - Self.Width - 16
+                  Y: =(Parent.TemplateHeight - Self.Height) / 2
+            - rowSeparator:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =${rgbaStr(sepColor, 1)}
+                  Height: =1
+                  OnSelect: =Select(Parent)
+                  Width: =Parent.TemplateWidth - 40
+                  X: =20
+                  Y: =Parent.TemplateHeight - Self.Height`;
+  }
+});
+
+/* ============================================
+   MULTI-CONTROL REGISTRY
+   For controls with multiple side-by-side variants,
+   each with its own YAML copy button.
+   ============================================ */
+
+const multiControls = []; // [{ id, def }]
+
+function registerMultiControl(def) {
+  multiControls.push({ id: 'mc' + (multiControls.length + 1), def });
+  renderControls();
+}
+
+/* Patch renderControls to also render multi-controls */
+const _origRender = renderControls;
+renderControls = function() {
+  _origRender();
+  renderMultiControls();
+};
+
+function renderMultiControls() {
+  const grid = document.getElementById('controlsGrid');
+
+  // Remove any previously rendered multi-control cards
+  grid.querySelectorAll('.multi-control-card').forEach(el => el.remove());
+
+  multiControls.forEach((entry, idx) => {
+    const { def } = entry;
+    const card = document.createElement('article');
+    card.className = 'control-card multi-control-card';
+    card.style.animationDelay = `${0.05 + idx * 0.05}s`;
+
+    // Header
+    const head = document.createElement('div');
+    head.className = 'control-card__head';
+    head.innerHTML = `
+      <div class="control-card__title">
+        <span class="control-card__name">${def.name}</span>
+        <span class="control-card__type">${def.type}</span>
+      </div>
+      <div class="control-card__actions">
+        <span class="control-card__tag">${def.tag}</span>
+      </div>`;
+    card.appendChild(head);
+
+    // Preview row — all variants side by side
+    const previewRow = document.createElement('div');
+    previewRow.style.cssText = `
+      display: flex; gap: 32px; align-items: flex-start;
+      padding: 28px 32px; flex-wrap: wrap;
+      background: linear-gradient(135deg, #F5F5FA 0%, #EFEFF8 100%);
+      position: relative;`;
+    previewRow.innerHTML = `<div style="position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,0.05) 1px,transparent 0);background-size:18px 18px;opacity:0.4;"></div>`;
+
+    def.variants.forEach((variant, vi) => {
+      const col = document.createElement('div');
+      col.style.cssText = `display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;z-index:1;`;
+
+      // Button preview
+      const btnWrap = document.createElement('div');
+      btnWrap.appendChild(variant.renderPreview());
+      col.appendChild(btnWrap);
+
+      // Label
+      const lbl = document.createElement('span');
+      lbl.textContent = variant.label;
+      lbl.style.cssText = `font-size:11px;font-family:'JetBrains Mono',monospace;color:#7E7E8F;letter-spacing:0.06em;`;
+      col.appendChild(lbl);
+
+      // Copy YAML button
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.style.setProperty('background', variant.accentColor);
+      copyBtn.innerHTML = `
+        <svg viewBox="0 0 16 16" fill="none">
+          <rect x="4" y="4" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 4V3a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Copy YAML`;
+      copyBtn.addEventListener('click', () => copyYaml(variant.yaml));
+      col.appendChild(copyBtn);
+
+      previewRow.appendChild(col);
+    });
+
+    card.appendChild(previewRow);
+    grid.appendChild(card);
+  });
+}
+
+window.CanvasKit.registerMultiControl = registerMultiControl;
+
+/* ============================================
+   CONTROL 10 — Icon Buttons (3 Variants)
+   ============================================ */
+
+registerMultiControl({
+  name: 'Icon Button',
+  type: 'GroupContainer@1.5.0 · ManualLayout',
+  tag: 'button',
+
+  variants: [
+    /* ---- Mint / Save ---- */
+    {
+      label: 'Mint · Save',
+      accentColor: '#2E7D32',
+      renderPreview: () => {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = `
+          display:inline-flex;align-items:center;gap:0;
+          background:rgba(222,245,229,1);border-radius:10px;
+          box-shadow:0 4px 12px rgba(0,0,0,0.12);
+          width:150px;height:50px;overflow:hidden;cursor:default;
+          font-family:'Segoe UI',system-ui,sans-serif;`;
+        wrap.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;width:50px;height:50px;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10.5L8 14.5L16 6" stroke="rgba(46,125,50,1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span style="color:rgba(46,125,50,1);font-size:13px;font-weight:600;">Save</span>`;
+        return wrap;
+      },
+      yaml: `- btnContainer_Mint_1:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      DropShadow: =DropShadow.Semibold
+      Fill: =RGBA(222, 245, 229, 1)
+      Height: =50
+      RadiusBottomLeft: =10
+      RadiusBottomRight: =10
+      RadiusTopLeft: =10
+      RadiusTopRight: =10
+      Width: =150
+      X: =332
+      Y: =30
+    Children:
+      - icoMint_1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(46, 125, 50, 1)
+            Height: =24
+            Icon: =Icon.Check
+            Width: =24
+            X: =15
+            Y: =13
+      - btnMint_1:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =Color.Transparent
+            BorderThickness: =0
+            Color: =RGBA(46, 125, 50, 1)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =Parent.Height
+            HoverBorderColor: =Color.Transparent
+            HoverColor: =RGBA(46, 125, 50, 1)
+            HoverFill: =RGBA(255, 255, 255, 0.4)
+            PressedFill: =RGBA(0, 0, 0, 0.05)
+            Text: ="      Save"
+            Width: =Parent.Width`
+    },
+
+    /* ---- Peach / Alert ---- */
+    {
+      label: 'Peach · Alert',
+      accentColor: '#B45A32',
+      renderPreview: () => {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = `
+          display:inline-flex;align-items:center;gap:0;
+          background:rgba(255,235,220,1);border-radius:10px;
+          box-shadow:0 4px 12px rgba(0,0,0,0.12);
+          width:150px;height:50px;overflow:hidden;cursor:default;
+          font-family:'Segoe UI',system-ui,sans-serif;`;
+        wrap.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;width:50px;height:50px;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3L18 17H2L10 3Z" stroke="rgba(180,90,50,1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 9v4M10 14.5v.5" stroke="rgba(180,90,50,1)" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span style="color:rgba(180,90,50,1);font-size:13px;font-weight:600;">Alert</span>`;
+        return wrap;
+      },
+      yaml: `- btnContainer_Peach:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      DropShadow: =DropShadow.Semibold
+      Fill: =RGBA(255, 235, 220, 1)
+      Height: =50
+      RadiusBottomLeft: =10
+      RadiusBottomRight: =10
+      RadiusTopLeft: =10
+      RadiusTopRight: =10
+      Width: =150
+      X: =332
+      Y: =220
+    Children:
+      - icoPeach:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(180, 90, 50, 1)
+            Height: =24
+            Icon: =Icon.Warning
+            Width: =24
+            X: =15
+            Y: =13
+      - btnPeach:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =Color.Transparent
+            BorderThickness: =0
+            Color: =RGBA(180, 90, 50, 1)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =Parent.Height
+            HoverBorderColor: =Color.Transparent
+            HoverColor: =RGBA(180, 90, 50, 1)
+            HoverFill: =RGBA(255, 255, 255, 0.4)
+            PressedFill: =RGBA(0, 0, 0, 0.05)
+            Text: ="      Alert"
+            Width: =Parent.Width`
+    },
+
+    /* ---- Lavender / Details ---- */
+    {
+      label: 'Lavender · Details',
+      accentColor: '#5A50B4',
+      renderPreview: () => {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = `
+          display:inline-flex;align-items:center;gap:0;
+          background:rgba(232,230,255,1);border-radius:10px;
+          box-shadow:0 4px 12px rgba(0,0,0,0.12);
+          width:150px;height:50px;overflow:hidden;cursor:default;
+          font-family:'Segoe UI',system-ui,sans-serif;`;
+        wrap.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;width:50px;height:50px;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7.5" stroke="rgba(90,80,180,1)" stroke-width="1.8"/>
+              <path d="M10 9v5M10 7v.5" stroke="rgba(90,80,180,1)" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span style="color:rgba(90,80,180,1);font-size:13px;font-weight:600;">Details</span>`;
+        return wrap;
+      },
+      yaml: `- btnContainer_Lavender_2:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      DropShadow: =DropShadow.Semibold
+      Fill: =RGBA(232, 230, 255, 1)
+      Height: =50
+      RadiusBottomLeft: =10
+      RadiusBottomRight: =10
+      RadiusTopLeft: =10
+      RadiusTopRight: =10
+      Width: =150
+      X: =332
+      Y: =330
+    Children:
+      - icoLavender_2:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(90, 80, 180, 1)
+            Height: =24
+            Icon: =Icon.Information
+            Width: =24
+            X: =15
+            Y: =13
+      - btnLavender_2:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =Color.Transparent
+            BorderThickness: =0
+            Color: =RGBA(90, 80, 180, 1)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =Parent.Height
+            HoverBorderColor: =Color.Transparent
+            HoverColor: =RGBA(90, 80, 180, 1)
+            HoverFill: =RGBA(255, 255, 255, 0.4)
+            PressedFill: =RGBA(0, 0, 0, 0.05)
+            Text: ="      Details"
+            Width: =Parent.Width`
+    },
+  ]
+});
+
+/* ============================================
+   THEMED MULTI-CONTROL REGISTRY
+   ============================================ */
+
+const themedMultiControls = [];
+
+function registerThemedMultiControl(def) {
+  themedMultiControls.push({ id: 'tmc' + (themedMultiControls.length + 1), def, theme: DEFAULT_THEME });
+  renderControls();
+}
+
+const _origRenderMulti = renderMultiControls;
+renderMultiControls = function() {
+  _origRenderMulti();
+  renderThemedMultiControls();
+};
+
+function renderThemedMultiControls() {
+  const grid = document.getElementById('controlsGrid');
+  grid.querySelectorAll('.themed-multi-card').forEach(el => el.remove());
+
+  themedMultiControls.forEach((entry) => {
+    const { def } = entry;
+    const theme = THEMES[entry.theme];
+
+    const card = document.createElement('article');
+    card.className = 'control-card themed-multi-card';
+    card.style.setProperty('--card-primary', theme.primary);
+    card.style.setProperty('--card-accent',  theme.accent);
+    card.style.setProperty('--card-bg',      theme.bg);
+
+    const head = document.createElement('div');
+    head.className = 'control-card__head';
+    head.innerHTML = `
+      <div class="control-card__title">
+        <span class="control-card__name">${def.name}</span>
+        <span class="control-card__type">${def.type}</span>
+      </div>
+      <div class="control-card__actions">
+        <div class="theme-dots" data-theme-picker>
+          ${buildThemeDots(entry.theme)}
+        </div>
+        <span class="control-card__tag">${def.tag}</span>
+      </div>`;
+    card.appendChild(head);
+
+    head.querySelector('[data-theme-picker]').addEventListener('click', (e) => {
+      const dot = e.target.closest('.theme-dot');
+      if (!dot) return;
+      const newTheme = dot.dataset.theme;
+      if (newTheme === entry.theme) return;
+      entry.theme = newTheme;
+      renderControls();
+    });
+
+    const previewRow = document.createElement('div');
+    previewRow.style.cssText = 'display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;padding:28px 32px;background:linear-gradient(135deg,var(--card-bg,#F5F5FA) 0%,color-mix(in srgb,var(--card-bg,#F5F5FA) 70%,white) 100%);position:relative;';
+    previewRow.innerHTML = '<div style="position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,0.06) 1px,transparent 0);background-size:18px 18px;opacity:0.45;pointer-events:none;"></div>';
+
+    def.variants.forEach((variant) => {
+      const col = document.createElement('div');
+      col.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;';
+
+      const previewEl = variant.renderPreview(theme);
+      col.appendChild(previewEl);
+
+      const lbl = document.createElement('span');
+      lbl.textContent = variant.label;
+      lbl.style.cssText = "font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#7E7E8F;letter-spacing:0.06em;text-align:center;";
+      col.appendChild(lbl);
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><rect x="4" y="4" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 4V3a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Copy YAML';
+      copyBtn.addEventListener('click', () => copyYaml(variant.buildYaml(theme)));
+      col.appendChild(copyBtn);
+
+      previewRow.appendChild(col);
+    });
+
+    card.appendChild(previewRow);
+    grid.appendChild(card);
+  });
+}
+
+window.CanvasKit.registerThemedMultiControl = registerThemedMultiControl;
+
+/* ============================================
+   CONTROL 11 - Input Controls (5 Variants)
+   ============================================ */
+
+registerThemedMultiControl({
+  name: 'Input Controls',
+  type: 'GroupContainer@1.5.0 - ManualLayout',
+  tag: 'input',
+
+  variants: [
+    {
+      label: 'Text - User',
+      renderPreview: (theme) => {
+        const p = theme.primary;
+        const bg = cssRgba(tint(p, 0.90));
+        const iconC = cssRgba(tint(p, 0.30));
+        const hint = cssRgba(tint(p, 0.55));
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:inline-flex;align-items:center;background:' + bg + ';border-radius:8px;width:200px;height:40px;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.07);';
+        wrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="' + iconC + '" stroke-width="1.6"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="' + iconC + '" stroke-width="1.6" stroke-linecap="round"/></svg></div><span style="color:' + hint + ';font-size:12px;">Full Name</span>';
+        return wrap;
+      },
+      buildYaml: (theme) => {
+        const p = theme.primary;
+        const bg = tint(p, 0.90);
+        const iconC = tint(p, 0.30);
+        return '- conInput_User:\n    Control: GroupContainer@1.5.0\n    Variant: ManualLayout\n    Properties:\n      Fill: =' + rgbaStr(bg,1) + '\n      Height: =40\n      RadiusBottomLeft: =8\n      RadiusBottomRight: =8\n      RadiusTopLeft: =8\n      RadiusTopRight: =8\n      Width: =280\n      X: =288\n      Y: =147\n    Children:\n      - icoUser:\n          Control: Classic/Icon@2.5.0\n          Properties:\n            Color: =' + rgbaStr(iconC,1) + '\n            Height: =20\n            Icon: =Icon.Person\n            Width: =20\n            X: =10\n            Y: =10\n      - txtInput_User:\n          Control: Classic/TextInput@2.3.2\n          Properties:\n            BorderThickness: =0\n            Default: =\n            Fill: =Color.Transparent\n            Height: =Parent.Height\n            HintText: ="Full Name"\n            HoverFill: =RGBA(255, 255, 255, 0.3)\n            PaddingLeft: =40\n            Width: =Parent.Width';
+      }
+    },
+    {
+      label: 'ComboBox',
+      renderPreview: (theme) => {
+        const p = theme.primary;
+        const bg = cssRgba(tint(p, 0.88));
+        const iconC = cssRgba(shade(p, 0.10));
+        const hint = cssRgba(tint(p, 0.40));
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:inline-flex;align-items:center;background:' + bg + ';border-radius:8px;width:200px;height:40px;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.07);position:relative;';
+        wrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="3" rx="1" fill="' + iconC + '" opacity="0.7"/><rect x="2" y="9" width="16" height="3" rx="1" fill="' + iconC + '" opacity="0.5"/><rect x="2" y="14" width="10" height="3" rx="1" fill="' + iconC + '" opacity="0.35"/></svg></div><span style="flex:1;color:' + hint + ';font-size:12px;">Select...</span><div style="width:28px;height:40px;background:' + iconC + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+        return wrap;
+      },
+      buildYaml: (theme) => {
+        const p = theme.primary;
+        const bg = tint(p, 0.88);
+        const pr = hexToRgb(p);
+        const dark = shade(p, 0.10);
+        return '- conInput_Combo:\n    Control: GroupContainer@1.5.0\n    Variant: ManualLayout\n    Properties:\n      Fill: =' + rgbaStr(bg,1) + '\n      Height: =40\n      RadiusBottomLeft: =8\n      RadiusBottomRight: =8\n      RadiusTopLeft: =8\n      RadiusTopRight: =8\n      Width: =300\n      X: =664\n      Y: =268\n    Children:\n      - icoCombo:\n          Control: Classic/Icon@2.5.0\n          Properties:\n            Color: =' + rgbaStr(dark,1) + '\n            Height: =20\n            Icon: =Icon.DetailList\n            Width: =20\n            X: =10\n            Y: =10\n      - ComboBox:\n          Control: Classic/ComboBox@2.4.0\n          Properties:\n            BorderThickness: =0\n            ChevronBackground: =' + rgbaStr(dark,1) + '\n            ChevronFill: =RGBA(255, 255, 255, 1)\n            Fill: =Color.Transparent\n            Height: =Parent.Height\n            HoverFill: =' + rgbaStr(pr,0.1) + '\n            IsSearchable: =false\n            PaddingLeft: =40\n            PressedFill: =' + rgbaStr(pr,0.8) + '\n            SelectionColor: =RGBA(255, 255, 255, 1)\n            SelectionFill: =' + rgbaStr(pr,1) + '\n            SelectionTagColor: =RGBA(255, 255, 255, 1)\n            SelectionTagFill: =' + rgbaStr(pr,1) + '\n            Width: =Parent.Width';
+      }
+    },
+    {
+      label: 'Dropdown',
+      renderPreview: (theme) => {
+        const p = theme.primary;
+        const bg = cssRgba(tint(p, 0.88));
+        const iconC = cssRgba(shade(p, 0.10));
+        const hint = cssRgba(tint(p, 0.40));
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:inline-flex;align-items:center;background:' + bg + ';border-radius:8px;width:200px;height:40px;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.07);';
+        wrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M4 6h12M6 10h8M8 14h4" stroke="' + iconC + '" stroke-width="1.7" stroke-linecap="round"/></svg></div><span style="flex:1;color:' + hint + ';font-size:12px;">Private</span><div style="width:28px;height:40px;background:' + iconC + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+        return wrap;
+      },
+      buildYaml: (theme) => {
+        const p = theme.primary;
+        const bg = tint(p, 0.88);
+        const pr = hexToRgb(p);
+        const dark = shade(p, 0.10);
+        return '- conInput_Select:\n    Control: GroupContainer@1.5.0\n    Variant: ManualLayout\n    Properties:\n      Fill: =' + rgbaStr(bg,1) + '\n      Height: =40\n      RadiusBottomLeft: =8\n      RadiusBottomRight: =8\n      RadiusTopLeft: =8\n      RadiusTopRight: =8\n      Width: =280\n      X: =1040\n      Y: =263\n    Children:\n      - icoFilter:\n          Control: Classic/Icon@2.5.0\n          Properties:\n            Color: =' + rgbaStr(dark,1) + '\n            Height: =20\n            Icon: =Icon.Filter\n            Width: =20\n            X: =10\n            Y: =10\n      - drpSelect:\n          Control: Classic/DropDown@2.3.1\n          Properties:\n            BorderThickness: =0\n            ChevronBackground: =' + rgbaStr(dark,1) + '\n            Color: =' + rgbaStr(dark,1) + '\n            Fill: =Color.Transparent\n            Height: =Parent.Height\n            HoverFill: =' + rgbaStr(pr,0.1) + '\n            Items: =["Private", "Public", "Shared"]\n            Items.Value: =Value\n            PaddingLeft: =40\n            PressedFill: =' + rgbaStr(pr,0.8) + '\n            SelectionColor: =RGBA(255, 255, 255, 1)\n            SelectionFill: =' + rgbaStr(pr,1) + '\n            Width: =Parent.Width';
+      }
+    },
+    {
+      label: 'Memo - Multiline',
+      renderPreview: (theme) => {
+        const p = theme.primary;
+        const bg = cssRgba(tint(p, 0.90));
+        const iconC = cssRgba(tint(p, 0.35));
+        const hint = cssRgba(tint(p, 0.55));
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:inline-flex;align-items:flex-start;background:' + bg + ';border-radius:8px;width:200px;height:90px;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.07);';
+        wrap.innerHTML = '<div style="display:flex;align-items:flex-start;justify-content:center;width:40px;padding-top:12px;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="' + iconC + '" stroke-width="1.6"/><path d="M6 7h8M6 10h8M6 13h5" stroke="' + iconC + '" stroke-width="1.4" stroke-linecap="round"/></svg></div><span style="padding-top:12px;color:' + hint + ';font-size:12px;">Enter notes here...</span>';
+        return wrap;
+      },
+      buildYaml: (theme) => {
+        const p = theme.primary;
+        const bg = tint(p, 0.90);
+        const iconC = tint(p, 0.35);
+        return '- conInput_Memo:\n    Control: GroupContainer@1.5.0\n    Variant: ManualLayout\n    Properties:\n      Fill: =' + rgbaStr(bg,1) + '\n      Height: =120\n      RadiusBottomLeft: =8\n      RadiusBottomRight: =8\n      RadiusTopLeft: =8\n      RadiusTopRight: =8\n      Width: =300\n      X: =288\n      Y: =495\n    Children:\n      - icoMemo:\n          Control: Classic/Icon@2.5.0\n          Properties:\n            Color: =' + rgbaStr(iconC,1) + '\n            Height: =20\n            Icon: =Icon.Edit\n            Width: =20\n            X: =10\n            Y: =12\n      - txtInput_Memo:\n          Control: Classic/TextInput@2.3.2\n          Properties:\n            BorderThickness: =0\n            Fill: =Color.Transparent\n            Height: =Parent.Height\n            HintText: ="Enter notes here..."\n            Mode: =TextMode.MultiLine\n            PaddingLeft: =40\n            PaddingTop: =12\n            Width: =Parent.Width';
+      }
+    },
+    {
+      label: 'Date Input',
+      renderPreview: (theme) => {
+        const p = theme.primary;
+        const bg = cssRgba(tint(p, 0.88));
+        const iconC = cssRgba(tint(p, 0.25));
+        const hint = cssRgba(tint(p, 0.50));
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:inline-flex;align-items:center;background:' + bg + ';border-radius:8px;width:200px;height:40px;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.07);';
+        wrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="15" rx="2" stroke="' + iconC + '" stroke-width="1.6"/><path d="M6 1v4M14 1v4M2 8h16" stroke="' + iconC + '" stroke-width="1.6" stroke-linecap="round"/><rect x="5" y="11" width="3" height="3" rx="0.5" fill="' + iconC + '" opacity="0.5"/><rect x="9" y="11" width="3" height="3" rx="0.5" fill="' + iconC + '" opacity="0.5"/></svg></div><span style="color:' + hint + ';font-size:12px;">MM/DD/YYYY</span>';
+        return wrap;
+      },
+      buildYaml: (theme) => {
+        const p = theme.primary;
+        const bg = tint(p, 0.88);
+        const iconC = tint(p, 0.25);
+        return '- conInput_Date:\n    Control: GroupContainer@1.5.0\n    Variant: ManualLayout\n    Properties:\n      Fill: =' + rgbaStr(bg,1) + '\n      Height: =40\n      RadiusBottomLeft: =8\n      RadiusBottomRight: =8\n      RadiusTopLeft: =8\n      RadiusTopRight: =8\n      Width: =280\n      X: =288\n      Y: =407\n    Children:\n      - icoDate:\n          Control: Classic/Icon@2.5.0\n          Properties:\n            Color: =' + rgbaStr(iconC,1) + '\n            Height: =20\n            Icon: =Icon.CalendarBlank\n            Width: =20\n            X: =10\n            Y: =10\n      - txtInput_Date:\n          Control: Classic/TextInput@2.3.2\n          Properties:\n            BorderThickness: =0\n            Default: =""\n            Fill: =Color.Transparent\n            Height: =Parent.Height\n            HintText: ="MM/DD/YYYY"\n            HoverFill: =RGBA(255, 255, 255, 0.3)\n            PaddingLeft: =40\n            Width: =Parent.Width';
+      }
+    }
+  ]
+});
+
+/* ============================================
+   CONTROL 12 - Header Bar
+   ============================================ */
+
+CanvasKit.registerControl({
+  name: 'Header Bar',
+  type: 'GroupContainer@1.5.0 - AutoLayout',
+  tag: 'header',
+
+  renderPreview: (theme) => {
+    const p      = theme.primary;
+    const bg     = cssRgba(tint(p, 0.88));
+    const border = cssRgba(tint(p, 0.70), 0.5);
+    const iconC  = cssRgba(shade(p, 0.20));
+    const textC  = cssRgba(shade(p, 0.20));
+    const avatarBg = cssRgba(tint(p, 0.60));
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'width:100%;height:63px;background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;display:flex;align-items:center;padding:0 20px;gap:14px;box-sizing:border-box;font-family:Segoe UI,system-ui,sans-serif;';
+
+    wrap.innerHTML =
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">' +
+        '<rect x="2" y="2" width="20" height="20" rx="4" stroke="' + iconC + '" stroke-width="1.6"/>' +
+        '<circle cx="12" cy="10" r="3" stroke="' + iconC + '" stroke-width="1.5"/>' +
+        '<path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="' + iconC + '" stroke-width="1.5" stroke-linecap="round"/>' +
+      '</svg>' +
+      '<span style="flex:1;font-size:15px;font-weight:600;color:' + textC + ';letter-spacing:-0.01em;">Power Apps Application</span>' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:' + avatarBg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+        '<svg width="18" height="18" viewBox="0 0 20 20" fill="none">' +
+          '<circle cx="10" cy="7" r="3.5" stroke="' + iconC + '" stroke-width="1.5"/>' +
+          '<path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="' + iconC + '" stroke-width="1.5" stroke-linecap="round"/>' +
+        '</svg>' +
+      '</div>' +
+      '<span style="font-size:12.5px;color:' + textC + ';font-weight:500;white-space:nowrap;">山田 太郎</span>';
+
+    return wrap;
+  },
+
+  buildYaml: (theme) => {
+    const p      = theme.primary;
+    const bg     = tint(p, 0.88);
+    const border = tint(p, 0.70);
+    const iconC  = shade(p, 0.20);
+
+    return `- conHeader_Slate:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      BorderColor: =${rgbaStr(border, 0.1)}
+      BorderThickness: =1
+      Fill: =${rgbaStr(bg, 1)}
+      Height: =63
+      LayoutAlignItems: =LayoutAlignItems.Center
+      LayoutDirection: =LayoutDirection.Horizontal
+      LayoutJustifyContent: =LayoutJustifyContent.Center
+      PaddingLeft: =20
+      PaddingRight: =20
+      Width: =1287
+      X: =28
+      Y: =136
+    Children:
+      - icoApp_Slate:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =${rgbaStr(iconC, 1)}
+            Height: =30
+            Icon: =Icon.Camera
+            Width: =30
+      - lblTitle_Slate:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(iconC, 1)}
+            FillPortions: =1
+            Font: =Font.'Segoe UI'
+            Size: =16
+            Text: ="Power Apps Application"
+      - imgUser_Slate:
+          Control: Image@2.2.3
+          Properties:
+            Height: =40
+            Image: =User().Image
+            RadiusBottomLeft: =40
+            RadiusBottomRight: =40
+            RadiusTopLeft: =40
+            RadiusTopRight: =40
+            Width: =40
+      - lblUser_Slate:
+          Control: Label@2.5.1
+          Properties:
+            Color: =${rgbaStr(iconC, 1)}
+            Font: =Font.'Open Sans'
+            Text: |-
+              =With( {
+               fullName:Split(User().FullName," ")
+               },
+               Last(fullName).Value &" "& First(fullName).Value
+              )`;
+  }
+});
+
+/* 8. Initial render */
+renderControls();
+</script>
+</body>
+</html>
