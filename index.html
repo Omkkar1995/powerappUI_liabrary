@@ -3022,6 +3022,359 @@ CanvasKit.registerControl({
   }
 });
 
+/* ============================================
+   CONTROL 13 - Tab Collection
+   ============================================ */
+
+CanvasKit.registerControl({
+  name: 'Tab Collection',
+  type: 'GroupContainer@1.5.0 - AutoLayout',
+  tag: 'nav',
+
+  renderPreview: (theme) => {
+    const p           = theme.primary;
+    const trackBg     = '#FFFFFF';
+    const activeBg    = p;
+    const inactiveBg  = '#FFFFFF';
+    const activeColor = '#FFFFFF';
+    const inactiveColor = cssRgba(tint(p, 0.30));
+
+    const tabs = ['General', 'Password', 'Settings', 'Profile'];
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText =
+      'display:inline-flex;align-items:center;background:' + trackBg +
+      ';border-radius:8px;padding:5px;gap:4px;font-family:Segoe UI,system-ui,sans-serif;' +
+      'box-shadow:0 1px 6px rgba(0,0,0,0.10);border:1px solid rgba(0,0,0,0.07);';
+
+    tabs.forEach((label, i) => {
+      const btn = document.createElement('button');
+      const isActive = i === 0;
+      btn.style.cssText =
+        'border:none;cursor:pointer;border-radius:5px;padding:7px 18px;font-size:11px;font-weight:' + (isActive ? '600' : '400') + ';' +
+        'background:' + (isActive ? activeBg : inactiveBg) + ';' +
+        'color:' + (isActive ? activeColor : inactiveColor) + ';' +
+        'box-shadow:' + (isActive ? '0 1px 3px rgba(0,0,0,0.18)' : 'none') + ';' +
+        'transition:all 0.15s ease;white-space:nowrap;';
+      btn.textContent = label;
+
+      btn.addEventListener('click', () => {
+        wrap.querySelectorAll('button').forEach((b, j) => {
+          const active = j === Array.from(wrap.children).indexOf(btn);
+          b.style.background = active ? activeBg : inactiveBg;
+          b.style.color      = active ? activeColor : inactiveColor;
+          b.style.fontWeight = active ? '600' : '400';
+          b.style.boxShadow  = active ? '0 1px 3px rgba(0,0,0,0.18)' : 'none';
+        });
+      });
+
+      wrap.appendChild(btn);
+    });
+
+    return wrap;
+  },
+
+  buildYaml: (_theme) => {
+    return `- tabCollection:
+    Control: GroupContainer@1.5.0
+    Variant: AutoLayout
+    Properties:
+      BorderStyle: =BorderStyle.None
+      Fill: =RGBA(209, 213, 219, 1)
+      Height: =50
+      LayoutDirection: =LayoutDirection.Horizontal
+      PaddingLeft: =5
+      PaddingRight: =5
+      Width: =885
+      X: =13
+      Y: =19
+    Children:
+      - galTabs_1:
+          Control: Gallery@2.15.0
+          Variant: Horizontal
+          Properties:
+            Height: =Parent.Height
+            Items: |
+              =[
+                {id: 1, label: "General"},
+                {id: 2, label: "Password"},
+                {id: 3, label: "Settings"},
+                {id: 4, label: "Profile"}
+              ]
+            LayoutMinHeight: =0
+            LayoutMinWidth: =0
+            ShowScrollbar: =false
+            TemplatePadding: =0
+            TemplateSize: =galTabs_1.Width/galTabs_1.AllItemsCount
+            Width: =Parent.Width
+          Children:
+            - btnTab_1:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderStyle: =BorderStyle.None
+                  Color: =If(IsBlank(selectedTab) && ThisItem.id = 1, RGBA(0, 0, 0, 1), If(selectedTab = ThisItem.id, RGBA(0, 0, 0, 1), RGBA(107, 114, 128, 1)))
+                  Fill: =If(IsBlank(selectedTab) && ThisItem.id = 1, RGBA(255, 255, 255, 1), If(selectedTab = ThisItem.id, RGBA(255, 255, 255, 1), RGBA(209, 213, 219, 1)))
+                  Height: =Parent.TemplateHeight - 10
+                  HoverBorderColor: =ColorFade(Self.BorderColor, -20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =If(IsBlank(selectedTab) && ThisItem.id = 1, RGBA(255, 255, 255, 1), If(selectedTab = ThisItem.id, RGBA(255, 255, 255, 1), ColorFade(Self.Fill, -10%)))
+                  OnSelect: |
+                    =UpdateContext({selectedTab: ThisItem.id})
+                  PressedBorderColor: =ColorFade(Self.BorderColor, -40%)
+                  PressedFill: =If(IsBlank(selectedTab) && ThisItem.id = 1, RGBA(255, 255, 255, 1), If(selectedTab = ThisItem.id, RGBA(255, 255, 255, 1), ColorFade(Self.Fill, -20%)))
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =11
+                  Text: =ThisItem.label
+                  Width: =Parent.TemplateWidth - 5
+                  X: =(Parent.TemplateWidth - Self.Width) / 2
+                  Y: =(Parent.TemplateHeight - Self.Height) / 2`;
+  }
+});
+
+/* ============================================
+   CONTROL 14 - Sidebar Navigation
+   ============================================ */
+
+CanvasKit.registerControl({
+  name: 'Sidebar Navigation',
+  type: 'GroupContainer@1.5.0 - ManualLayout',
+  tag: 'nav',
+
+  renderPreview: (theme) => {
+    const p       = theme.primary;
+    const iconC   = cssRgba(shade(p, 0.20));
+    const labelC  = cssRgba(shade(p, 0.10));
+    const headerC = cssRgba(tint(p, 0.40));
+    const titleBg = cssRgba(tint(p, 0.60));
+
+    const items = [
+      { isHeader: true,  label: 'MAIN' },
+      { isHeader: false, label: 'Home',      icon: 'M3 9.5L10 3l7 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z' },
+      { isHeader: false, label: 'Dashboard', icon: 'M4 4h5v5H4zm7 0h5v5h-5zM4 11h5v5H4zm7 0h5v5h-5z' },
+      { isHeader: false, label: 'Analytics', icon: 'M12 2a10 10 0 100 20A10 10 0 0012 2z' },
+      { isHeader: true,  label: 'WORKSPACE' },
+      { isHeader: false, label: 'Teams',     icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z' },
+      { isHeader: false, label: 'Messages',  icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
+      { isHeader: false, label: 'Settings',  icon: 'M12 15a3 3 0 100-6 3 3 0 000 6z' },
+    ];
+
+    const sidebar = document.createElement('div');
+    sidebar.style.cssText = 'display:flex;flex-direction:column;background:#fff;border-radius:0 10px 10px 0;width:133px;height:320px;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,0.08);flex-shrink:0;';
+
+    const titleBar = document.createElement('div');
+    titleBar.style.cssText = 'display:flex;align-items:center;justify-content:center;height:44px;background:' + titleBg + ';flex-shrink:0;';
+    titleBar.innerHTML = '<span style="font-size:11px;font-weight:700;color:' + labelC + ';letter-spacing:0.04em;">PASONA PJ</span>';
+    sidebar.appendChild(titleBar);
+
+    const itemsWrap = document.createElement('div');
+    itemsWrap.style.cssText = 'flex:1;overflow:hidden;display:flex;flex-direction:column;';
+
+    items.forEach(item => {
+      const row = document.createElement('div');
+      if (item.isHeader) {
+        row.style.cssText = 'padding:10px 13px 2px;font-size:9px;font-weight:600;color:' + headerC + ';letter-spacing:0.08em;';
+        row.textContent = item.label;
+      } else {
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:0 13px;height:36px;cursor:pointer;border-radius:6px;margin:1px 6px;transition:background 0.15s;';
+        row.innerHTML =
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="' + iconC + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="' + item.icon + '"/></svg>' +
+          '<span style="font-size:10px;font-weight:600;color:' + labelC + ';">' + item.label + '</span>';
+        row.addEventListener('mouseover', () => { row.style.background = cssRgba(tint(p, 0.88)); });
+        row.addEventListener('mouseout',  () => { row.style.background = 'transparent'; });
+      }
+      itemsWrap.appendChild(row);
+    });
+    sidebar.appendChild(itemsWrap);
+
+    const userBar = document.createElement('div');
+    userBar.style.cssText = 'height:44px;display:flex;align-items:center;justify-content:center;border-top:1px solid rgba(0,0,0,0.06);flex-shrink:0;';
+    userBar.innerHTML = '<span style="font-size:10px;font-weight:700;color:' + labelC + ';">山田 太郎</span>';
+    sidebar.appendChild(userBar);
+
+    return sidebar;
+  },
+
+  buildYaml: (theme) => {
+    const p         = theme.primary;
+    const titleBg   = tint(p, 0.60);
+    const titleC    = shade(p, 0.10);
+    const headerC   = tint(p, 0.40);
+    const itemC     = shade(p, 0.20);
+    const hoverFill = tint(p, 0.88);
+    const selectFill = tint(p, 0.70);
+    return `- conSidebar_1:
+    Control: GroupContainer@1.5.0
+    Variant: ManualLayout
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      Height: =Parent.Height
+      RadiusBottomLeft: =0
+      RadiusBottomRight: =10
+      RadiusTopLeft: =0
+      RadiusTopRight: =10
+      Width: =133
+      X: =1233
+    Children:
+      - conUser_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height * 7%
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =Parent.Height - Self.Height
+          Children:
+            - lblName_1:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =Parent.Height
+                  LayoutMinWidth: =0
+                  PaddingLeft: =0
+                  Size: =12
+                  Text: =User().FullName
+                  X: =Parent.Width/2 - Self.Width/2
+      - conItems_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height - conUser_1.Height - conTitle_1.Height
+            LayoutDirection: =LayoutDirection.Vertical
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =conTitle_1.Height
+          Children:
+            - galSidebarItems_1:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  Height: =Parent.Height
+                  Items: |
+                    =Table(
+                      { id: 1, isHeader: true, labelText: "MAIN", itemIcon: Blank(), screen: Blank() },
+                      { id: 2, isHeader: false, labelText: "Home", itemIcon: Icon.Home, screen: App.ActiveScreen },
+                      { id: 3, isHeader: false, labelText: "Dashboard", itemIcon: Icon.Waffle, screen: App.ActiveScreen },
+                      { id: 4, isHeader: false, labelText: "Analytics", itemIcon: Icon.Globe, screen: App.ActiveScreen },
+                      { id: 5, isHeader: true, labelText: "WORKSPACE", itemIcon: Blank(), screen: Blank() },
+                      { id: 6, isHeader: false, labelText: "Teams", itemIcon: Icon.Person, screen: App.ActiveScreen },
+                      { id: 7, isHeader: false, labelText: "Messages", itemIcon: Icon.Message, screen: App.ActiveScreen },
+                      { id: 8, isHeader: false, labelText: "Settings", itemIcon: Icon.Settings, screen: App.ActiveScreen }
+                    )
+                  LayoutMinWidth: =0
+                  ShowScrollbar: =false
+                  TemplateFill: =If(!ThisItem.isHeader && ThisItem.IsSelected, ${rgbaStr(selectFill, 1)}, RGBA(0, 0, 0, 0))
+                  TemplatePadding: =0
+                  TemplateSize: =45
+                  Width: =Parent.Width
+                Children:
+                  - lblSectionHeader_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =${rgbaStr(headerC, 1)}
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =Parent.TemplateHeight - 15
+                        PaddingBottom: =0
+                        PaddingLeft: =Parent.TemplateWidth * 0.1
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =10
+                        Text: =ThisItem.labelText
+                        Visible: '=ThisItem.isHeader '
+                        Width: =Parent.TemplateWidth
+                        Y: =15
+                  - conClickableItem_1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Height: =Parent.TemplateHeight
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =10
+                        PaddingLeft: =Parent.TemplateWidth * 0.1
+                        Visible: =!ThisItem.isHeader
+                        Width: =Parent.TemplateWidth
+                      Children:
+                        - icoItem_1:
+                            Control: Classic/Icon@2.5.0
+                            Properties:
+                              Color: =${rgbaStr(itemC, 1)}
+                              Height: |
+                                =Parent.Height * 0.4
+                              Icon: =ThisItem.itemIcon
+                              Width: =Self.Height
+                        - lblItem_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =${rgbaStr(itemC, 1)}
+                              Font: =Font.'Open Sans'
+                              FontWeight: =FontWeight.Semibold
+                              Height: =Parent.Height
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Size: =10
+                              Text: =ThisItem.labelText
+                              Width: =Parent.Width - icoItem_1.Width - Parent.LayoutGap
+                  - btnItemAction_1:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderStyle: =BorderStyle.None
+                        Fill: =RGBA(0, 0, 0, 0)
+                        Height: =Parent.TemplateHeight
+                        HoverFill: =${rgbaStr(hoverFill, 1)}
+                        OnSelect: =If(!IsBlank(ThisItem.screen), Navigate(ThisItem.screen))
+                        PressedFill: =ColorFade(Self.HoverFill, -20%)
+                        Text: =""
+                        Visible: =!ThisItem.isHeader
+                        Width: =Parent.TemplateWidth * 0.9
+                        X: =Parent.TemplateWidth * 0.05
+      - conTitle_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height * 7%
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+          Children:
+            - lblTitle_3:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =${rgbaStr(titleC, 1)}
+                  Fill: =${rgbaStr(titleBg, 1)}
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =Parent.Height
+                  LayoutMinWidth: =0
+                  PaddingLeft: =0
+                  Text: ="PASONA PJ"`;
+  }
+});
+
 /* 8. Initial render */
 renderControls();
 </script>
